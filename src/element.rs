@@ -482,4 +482,8 @@ impl ElementList<Any> {
         }
         vec
     }
+    /// returns the list's metadata
+    pub fn metadata(&self) -> Metadata {
+        self.metadata.clone()
+    }
 }
