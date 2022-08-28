@@ -9,7 +9,7 @@ To add to your project:
 
 ```toml
 [dependencies]
-texcore = "0.1.0"
+texcore = "0.2.0"
 ```
 
 ## Example
