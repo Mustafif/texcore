@@ -1,5 +1,7 @@
 # TexCore
 
+> This project is under the [MIT License](LICENSE)
+
 Texcore is the successor to `tex-rs` and uses linked lists to help walk and sort elements to either
 write to tex code or compile to pdf.
 

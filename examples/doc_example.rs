@@ -9,22 +9,22 @@ fn main() {
         "title".to_string(),
         11,
         "book".to_string(),
-        true
+        true,
     );
     let part = Part::new("part".to_string());
-    let chapter = Chapter::new("chapter".to_string());
-    let header1 = Header::new("header1".to_string(), 1);
-    let header2 = Header::new("header2".to_string(), 2);
-    let text = Text::new("text".to_string(), Normal);
-    let pkg = Package::new("dramatist".to_string());
     list.push(part.into());
+    let chapter = Chapter::new("chapter".to_string());
     list.push(chapter.into());
+    let header1 = Header::new("header1".to_string(), 1);
     list.push(header1.into());
+    let header2 = Header::new("header2".to_string(), 2);
     list.push(header2.into());
+    let text = Text::new("text".to_string(), Normal);
     list.push(text.into());
+    let pkg = Package::new("dramatist".to_string());
     list.push(pkg.into());
     // To compile:
-    // list.compile(PathBuf::from("test.pdf")).unwrap();
+    //list.compile(PathBuf::from("test.pdf")).unwrap();
     // To write tex file:
     // list.write(PathBuf::from("test.tex"), None, false).unwrap();
     // To print:

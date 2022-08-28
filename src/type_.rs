@@ -1,5 +1,6 @@
-use crate::Level;
+use crate::{Element, Level, Tex};
 
+#[allow(non_camel_case_types)]
 /// Represents the types of latex elements
 #[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
 pub enum Type {
@@ -13,6 +14,7 @@ pub enum Type {
     T_Environment,
     T_List,
     T_Item,
+    T_Custom,
 }
 
 /// Represents the metadata
@@ -59,6 +61,7 @@ pub enum TextType {
     Bold,
     Italics,
     Normal,
+    Math,
     Par,
 }
 
@@ -72,6 +75,48 @@ pub struct Any {
     pub text_type: Option<TextType>,
     pub list_type: Option<ListType>,
     pub items: Option<Vec<Item>>,
+    pub elements: Option<Vec<Element<Any>>>,
+}
+
+/// Represents an environment in latex
+#[derive(Debug, Clone, PartialOrd, PartialEq)]
+pub struct Environment {
+    pub name: String,
+    pub elements: Vec<Element<Any>>,
+}
+
+impl Environment {
+    pub fn new(name: String) -> Self {
+        Self {
+            name,
+            elements: Vec::new(),
+        }
+    }
+    pub fn push(&mut self, element: Element<Any>) {
+        self.elements.push(element)
+    }
+    pub fn set_elements(&mut self, elements: Vec<Element<Any>>) {
+        self.elements = elements
+    }
+    pub fn inner_latex_string(&self) -> String {
+        let mut strings = Vec::new();
+        for e in &self.elements {
+            strings.push(e.value.to_latex_string())
+        }
+        strings.join("\n")
+    }
+}
+
+#[derive(Debug, Clone, PartialOrd, PartialEq)]
+pub struct Custom {
+    pub value: String,
+    pub level: Level,
+}
+
+impl Custom {
+    pub fn new(value: String, level: Level) -> Self {
+        Self { value, level }
+    }
 }
 
 /// Represents `\input{}` in latex
@@ -160,17 +205,7 @@ impl Paragraph {
         Self { content }
     }
 }
-/*
-pub struct Environment{
-    pub name: String
-}
 
-impl Environment{
-    pub fn new(name: String) -> Self{
-        Self{name}
-    }
-}
-*/
 /// Represents `\begin{list type} ... \end{list type}` in latex
 #[derive(Debug, Clone, PartialOrd, PartialEq)]
 pub struct List {

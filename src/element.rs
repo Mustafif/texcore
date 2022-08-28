@@ -18,7 +18,7 @@ pub trait Tex {
 impl Tex for Any {
     fn to_latex_string(&self) -> String {
         let self_rc = Rc::new(self);
-        return match self.type_ {
+        match self.type_ {
             T_Input => Input::new(self_rc.value.clone(), self_rc.level).to_latex_string(),
             T_Package => Package::new(self_rc.value.clone()).to_latex_string(),
             T_Part => Part::new(self_rc.value.clone()).to_latex_string(),
@@ -39,7 +39,12 @@ impl Tex for Any {
                     Some(t) => { Text::new(self_rc.value.clone(), t).to_latex_string() }
                 }
             }
-            T_Environment => "".to_string(),
+            T_Environment => {
+                let mut env = Environment::new(self.value.clone());
+                env.set_elements(self.elements.clone().unwrap());
+                env.to_latex_string()
+            }
+            T_Custom => self.value.clone(),
             T_List => {
                 match self.list_type {
                     None => {
@@ -51,7 +56,26 @@ impl Tex for Any {
                 }
             }
             T_Item => Item::new(self_rc.value.clone()).to_latex_string(),
-        };
+        }
+    }
+}
+
+impl Tex for Environment {
+    fn to_latex_string(&self) -> String {
+        let begin = format!(r"\begin{{{}}}", &self.name);
+        let end = format!(r"\end{{{}}}", &self.name);
+        let strings = vec![
+            begin,
+            self.inner_latex_string(),
+            end,
+        ];
+        strings.join("\n")
+    }
+}
+
+impl Tex for Custom {
+    fn to_latex_string(&self) -> String {
+        self.value.clone()
     }
 }
 
@@ -110,6 +134,7 @@ impl Tex for Text {
             Bold => format!(r"\textbf{{{}}}", &self.content),
             Italics => format!(r"\textit{{{}}}", &self.content),
             Normal => format!(r"{}", &self.content),
+            Math => format!("${}$", &self.content),
             Par => format!(r"\par {{{}}}", &self.content),
         };
     }
@@ -149,14 +174,11 @@ impl Tex for Metadata {
         let title = format!(r"\title{{{}}}", &self.title);
         let author = format!(r"\author{{{}}}", &self.author);
         let date = format!(r"\date{{{}}}", &self.date);
-        let mut result = Vec::new();
-        result.push(doc_class);
-        result.push(title);
-        result.push(author);
-        result.push(date);
+        let result = vec![doc_class, title, author, date];
         result.join("\n")
     }
 }
+
 
 impl Into<Element<Any>> for Part {
     fn into(self) -> Element<Any> {
@@ -168,6 +190,7 @@ impl Into<Element<Any>> for Part {
             text_type: None,
             list_type: None,
             items: None,
+            elements: None,
         };
         Element::new(any, T_Part, Document)
     }
@@ -183,6 +206,7 @@ impl Into<Element<Any>> for Chapter {
             text_type: None,
             list_type: None,
             items: None,
+            elements: None,
         };
         Element::new(any, T_Chapter, Document)
     }
@@ -198,6 +222,7 @@ impl Into<Element<Any>> for Header {
             text_type: None,
             list_type: None,
             items: None,
+            elements: None,
         };
         Element::new(any, T_Header, Document)
     }
@@ -213,6 +238,7 @@ impl Into<Element<Any>> for Paragraph {
             text_type: None,
             list_type: None,
             items: None,
+            elements: None,
         };
         Element::new(any, T_Paragraph, Document)
     }
@@ -228,6 +254,7 @@ impl Into<Element<Any>> for Text {
             text_type: Some(self.type_),
             list_type: None,
             items: None,
+            elements: None,
         };
         Element::new(any, T_Text, Document)
     }
@@ -243,6 +270,7 @@ impl Into<Element<Any>> for Package {
             text_type: None,
             list_type: None,
             items: None,
+            elements: None,
         };
         Element::new(any.clone(), T_Package, any.level.unwrap())
     }
@@ -258,14 +286,48 @@ impl Into<Element<Any>> for Input {
             text_type: None,
             list_type: None,
             items: None,
+            elements: None,
         };
         Element::new(any.clone(), T_Input, any.level.unwrap())
     }
 }
 
+impl Into<Element<Any>> for Environment {
+    fn into(self) -> Element<Any> {
+        let any = Any {
+            value: self.name,
+            type_: T_Environment,
+            level: Some(Document),
+            header_level: None,
+            text_type: None,
+            list_type: None,
+            items: None,
+            elements: Some(self.elements),
+        };
+        Element::new(any.clone(), T_Environment, any.level.unwrap())
+    }
+}
+
+impl Into<Element<Any>> for Custom {
+    fn into(self) -> Element<Any> {
+        let any = Any {
+            value: self.value,
+            type_: T_Custom,
+            level: Some(self.level),
+            header_level: None,
+            text_type: None,
+            list_type: None,
+            items: None,
+            elements: None,
+        };
+        Element::new(any.clone(), T_Custom, any.level.unwrap())
+    }
+}
+
 /// A latex element
+#[derive(PartialOrd, PartialEq, Clone, Debug)]
 pub struct Element<T: Tex> {
-    value: T,
+    pub(crate) value: T,
     type_: Type,
     level: Level,
 }
@@ -411,5 +473,13 @@ impl ElementList<Any> {
     /// Prints the whole tex source code
     pub fn cat(self) {
         println!("{}", self.to_latex_string());
+    }
+    /// Returns &self.list to Vec<Any>
+    pub fn list_to_vec(&self) -> Vec<Element<Any>> {
+        let mut vec = Vec::new();
+        for l in self.list.clone() {
+            vec.push(l)
+        }
+        vec
     }
 }

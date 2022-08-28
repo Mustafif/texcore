@@ -1,8 +1,8 @@
 [package]
 name = "texcore"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
-author = "Mustafif Khan"
+authors = ["Mustafif Khan"]
 description = "Write latex in rust, and either compile it to pdf or output the tex code"
 license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
