@@ -9,6 +9,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 use tectonic::latex_to_pdf;
+use serde::{Deserialize, Serialize};
 
 /// Converts a struct to a string
 pub trait Tex {
@@ -325,7 +326,7 @@ impl Into<Element<Any>> for Custom {
 }
 
 /// A latex element
-#[derive(PartialOrd, PartialEq, Clone, Debug)]
+#[derive(PartialOrd, PartialEq, Clone, Debug, Deserialize, Serialize)]
 pub struct Element<T: Tex> {
     pub(crate) value: T,
     type_: Type,
@@ -344,6 +345,7 @@ impl<T: Tex> Element<T> {
 }
 
 /// A linked list of elements
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ElementList<T: Tex> {
     metadata: Metadata,
     list: LinkedList<Element<T>>,

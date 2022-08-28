@@ -1,8 +1,9 @@
 use crate::{Element, Level, Tex};
+use serde::{Deserialize, Serialize};
 
 #[allow(non_camel_case_types)]
 /// Represents the types of latex elements
-#[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub enum Type {
     T_Input,
     T_Package,
@@ -18,7 +19,7 @@ pub enum Type {
 }
 
 /// Represents the metadata
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Metadata {
     pub author: String,
     pub date: String,
@@ -49,14 +50,14 @@ impl Metadata {
 }
 
 /// Represents the two different list types in latex
-#[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub enum ListType {
     Itemized,
     Enumerated,
 }
 
 /// Represents the different text types in latex
-#[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub enum TextType {
     Bold,
     Italics,
@@ -66,7 +67,7 @@ pub enum TextType {
 }
 
 /// Represents any latex element
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Any {
     pub value: String,
     pub type_: Type,
@@ -79,7 +80,7 @@ pub struct Any {
 }
 
 /// Represents an environment in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Environment {
     pub name: String,
     pub elements: Vec<Element<Any>>,
@@ -107,7 +108,7 @@ impl Environment {
     }
 }
 
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Custom {
     pub value: String,
     pub level: Level,
@@ -120,7 +121,7 @@ impl Custom {
 }
 
 /// Represents `\input{}` in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Input {
     pub file_name: String,
     pub level: Option<Level>,
@@ -133,7 +134,7 @@ impl Input {
 }
 
 /// Represents `\usepackage{}` in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Package {
     pub pkg: String,
 }
@@ -145,7 +146,7 @@ impl Package {
 }
 
 /// Represents `\part{}` in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Part {
     pub name: String,
 }
@@ -157,7 +158,7 @@ impl Part {
 }
 
 /// Represents `\chapter{}` in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Chapter {
     pub name: String,
 }
@@ -169,7 +170,7 @@ impl Chapter {
 }
 
 /// Represents `\section{}` in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Header {
     pub name: String,
     pub header_level: u8,
@@ -182,7 +183,7 @@ impl Header {
 }
 
 /// Represents `\<text type>{}` in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Text {
     pub content: String,
     pub type_: TextType,
@@ -195,7 +196,7 @@ impl Text {
 }
 
 /// Represents `\paragraph{}` in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Paragraph {
     pub content: String,
 }
@@ -207,7 +208,7 @@ impl Paragraph {
 }
 
 /// Represents `\begin{list type} ... \end{list type}` in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct List {
     pub type_: ListType,
     pub items: Vec<Item>,
@@ -220,7 +221,7 @@ impl List {
 }
 
 /// Represents `\item{}` in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Item {
     pub name: String,
 }
