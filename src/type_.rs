@@ -49,6 +49,19 @@ impl Metadata {
     }
 }
 
+impl Default for Metadata{
+    fn default() -> Self {
+        Self{
+            author: "author".to_string(), 
+            date: "date".to_string(), 
+            title: "title".to_string(), 
+            fontsize: 11, 
+            doc_class: "article".to_string(), 
+            maketitle: true 
+        }
+    }
+}
+
 /// Represents the two different list types in latex
 #[derive(Debug, Copy, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub enum ListType {

@@ -351,6 +351,7 @@ pub struct ElementList<T: Tex> {
     list: LinkedList<Element<T>>,
 }
 
+
 impl ElementList<Any> {
     /// Creates a new empty list
     pub fn new(
@@ -487,5 +488,11 @@ impl ElementList<Any> {
     /// returns the list's metadata
     pub fn metadata(&self) -> Metadata {
         self.metadata.clone()
+    }
+}
+
+impl Default for ElementList<Any>{
+    fn default() -> Self {
+        Self { metadata: Metadata::default(), list: LinkedList::new() }
     }
 }
