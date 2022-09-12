@@ -434,17 +434,27 @@ impl ElementList<Any> {
     }
     /// Walks the list and returns a split latex string seperating Packages level
     pub fn to_latex_split_string(self) -> (String, String) {
+        let mut meta = Vec::new();
+        meta.push(self.metadata.to_latex_string().to_owned());
+        let mut packages = Vec::new();
+        let mut document = Vec::new();
+        document.push(r"\begin{document}".to_owned());
+        if self.metadata.maketitle {
+            document.push(r"\maketitle".to_owned());
+        }
         let sort = self.sort();
-        let mut seg1 = Vec::new();
-        let mut seg2 = Vec::new();
         for i in &sort.list {
-            if i.level != Packages {
-                seg1.push(i.value.to_latex_string())
-            } else {
-                seg2.push(i.value.to_latex_string())
+            match i.level {
+                Document => document.push(i.value.to_latex_string()),
+                Packages => packages.push(i.value.to_latex_string()),
+                Meta => meta.push(i.value.to_latex_string()),
             }
         }
-        (seg1.join("\n"), seg2.join("\n"))
+        document.push(r"\end{document}".to_owned());
+        let mut result = Vec::new();
+        result.push(meta.join("\n"));
+        result.push(document.join("\n"));
+        (result.join("\n"), packages.join("\n"))
     }
     /// Writes files from turning list into string
     pub fn write(
