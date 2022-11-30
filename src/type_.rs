@@ -31,34 +31,27 @@ pub struct Metadata {
 
 impl Metadata {
     pub fn new(
-        author: String,
-        date: String,
-        title: String,
+        author: &str,
+        date: &str,
+        title: &str,
         fontsize: u8,
-        doc_class: String,
+        doc_class: &str,
         maketitle: bool,
     ) -> Self {
         Self {
-            author,
-            date,
-            title,
+            author: author.to_string(),
+            date: date.to_string(),
+            title: title.to_string(),
             fontsize,
-            doc_class,
+            doc_class: doc_class.to_string(),
             maketitle,
         }
     }
 }
 
-impl Default for Metadata{
+impl Default for Metadata {
     fn default() -> Self {
-        Self{
-            author: "author".to_string(), 
-            date: "date".to_string(), 
-            title: "title".to_string(), 
-            fontsize: 11, 
-            doc_class: "article".to_string(), 
-            maketitle: true 
-        }
+        Self::new("author", "date", "title", 11, "article", true)
     }
 }
 
@@ -100,9 +93,9 @@ pub struct Environment {
 }
 
 impl Environment {
-    pub fn new(name: String) -> Self {
+    pub fn new(name: &str) -> Self {
         Self {
-            name,
+            name: name.to_string(),
             elements: Vec::new(),
         }
     }
@@ -121,6 +114,7 @@ impl Environment {
     }
 }
 
+/// Represents custom Latex code given a string and a level to place it
 #[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Custom {
     pub value: String,
@@ -128,8 +122,8 @@ pub struct Custom {
 }
 
 impl Custom {
-    pub fn new(value: String, level: Level) -> Self {
-        Self { value, level }
+    pub fn new(value: &str, level: Level) -> Self {
+        Self { value: value.to_string(), level }
     }
 }
 
@@ -141,8 +135,8 @@ pub struct Input {
 }
 
 impl Input {
-    pub fn new(file_name: String, level: Option<Level>) -> Self {
-        Self { file_name, level }
+    pub fn new(file_name: &str, level: Option<Level>) -> Self {
+        Self { file_name: file_name.to_string(), level }
     }
 }
 
@@ -153,8 +147,8 @@ pub struct Package {
 }
 
 impl Package {
-    pub fn new(pkg: String) -> Self {
-        Self { pkg }
+    pub fn new(pkg: &str) -> Self {
+        Self { pkg: pkg.to_string() }
     }
 }
 
@@ -165,8 +159,8 @@ pub struct Part {
 }
 
 impl Part {
-    pub fn new(name: String) -> Self {
-        Self { name }
+    pub fn new(name: &str) -> Self {
+        Self { name: name.to_string() }
     }
 }
 
@@ -177,8 +171,8 @@ pub struct Chapter {
 }
 
 impl Chapter {
-    pub fn new(name: String) -> Self {
-        Self { name }
+    pub fn new(name: &str) -> Self {
+        Self { name: name.to_string() }
     }
 }
 
@@ -190,8 +184,8 @@ pub struct Header {
 }
 
 impl Header {
-    pub fn new(name: String, header_level: u8) -> Self {
-        Self { name, header_level }
+    pub fn new(name: &str, header_level: u8) -> Self {
+        Self { name: name.to_string(), header_level }
     }
 }
 
@@ -203,8 +197,8 @@ pub struct Text {
 }
 
 impl Text {
-    pub fn new(content: String, type_: TextType) -> Self {
-        Self { content, type_ }
+    pub fn new(content: &str, type_: TextType) -> Self {
+        Self { content: content.to_string(), type_ }
     }
 }
 
@@ -215,8 +209,8 @@ pub struct Paragraph {
 }
 
 impl Paragraph {
-    pub fn new(content: String) -> Self {
-        Self { content }
+    pub fn new(content: &str) -> Self {
+        Self { content: content.to_string() }
     }
 }
 
@@ -240,7 +234,7 @@ pub struct Item {
 }
 
 impl Item {
-    pub fn new(name: String) -> Self {
-        Self { name }
+    pub fn new(name: &str) -> Self {
+        Self { name: name.to_string() }
     }
 }

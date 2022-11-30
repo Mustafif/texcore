@@ -1,15 +1,13 @@
 use crate::Level::*;
-use crate::ListType::Itemized;
 use crate::TextType::*;
 use crate::Type::*;
 use crate::*;
-use std::rc::Rc;
+use serde::{Deserialize, Serialize};
 use std::collections::LinkedList;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 use tectonic::latex_to_pdf;
-use serde::{Deserialize, Serialize};
 
 /// Converts a struct to a string
 pub trait Tex {
@@ -18,45 +16,37 @@ pub trait Tex {
 
 impl Tex for Any {
     fn to_latex_string(&self) -> String {
-        let self_rc = Rc::new(self);
         match self.type_ {
-            T_Input => Input::new(self_rc.value.clone(), self_rc.level).to_latex_string(),
-            T_Package => Package::new(self_rc.value.clone()).to_latex_string(),
-            T_Part => Part::new(self_rc.value.clone()).to_latex_string(),
-            T_Chapter => Chapter::new(self_rc.value.clone()).to_latex_string(),
+            T_Input => Input::new(&self.value, self.level).to_latex_string(),
+            T_Package => Package::new(&self.value).to_latex_string(),
+            T_Part => Part::new(&self.value).to_latex_string(),
+            T_Chapter => Chapter::new(&self.value).to_latex_string(),
             T_Header => {
                 if self.header_level.is_some() {
-                    Header::new(self_rc.value.clone(), self_rc.header_level.unwrap()).to_latex_string()
+                    Header::new(&self.value, self.header_level.unwrap())
+                        .to_latex_string()
                 } else {
-                    Header::new(self_rc.value.clone(), 1).to_latex_string()
+                    Header::new(&self.value, 1).to_latex_string()
                 }
             }
-            T_Paragraph => Paragraph::new(self_rc.value.clone()).to_latex_string(),
-            T_Text => {
-                match self.text_type {
-                    None => {
-                        Text::new(self_rc.value.clone(), Normal).to_latex_string()
-                    }
-                    Some(t) => { Text::new(self_rc.value.clone(), t).to_latex_string() }
-                }
-            }
+            T_Paragraph => Paragraph::new(&self.value).to_latex_string(),
+            T_Text => match self.text_type {
+                None => Text::new(&self.value, Normal).to_latex_string(),
+                Some(t) => Text::new(&self.value, t).to_latex_string(),
+            },
             T_Environment => {
-                let mut env = Environment::new(self.value.clone());
+                let mut env = Environment::new(&self.value);
                 env.set_elements(self.elements.clone().unwrap());
                 env.to_latex_string()
             }
             T_Custom => self.value.clone(),
-            T_List => {
-                match self.list_type {
-                    None => {
-                        List::new(Itemized, self_rc.items.clone().unwrap()).to_latex_string()
-                    }
-                    Some(s) => {
-                        List::new(s, self_rc.items.clone().unwrap()).to_latex_string()
-                    }
+            T_List => match self.list_type {
+                None => {
+                    List::new(ListType::Itemized, self.items.clone().unwrap()).to_latex_string()
                 }
-            }
-            T_Item => Item::new(self_rc.value.clone()).to_latex_string(),
+                Some(s) => List::new(s, self.items.clone().unwrap()).to_latex_string(),
+            },
+            T_Item => Item::new(&self.value).to_latex_string(),
         }
     }
 }
@@ -65,11 +55,7 @@ impl Tex for Environment {
     fn to_latex_string(&self) -> String {
         let begin = format!(r"\begin{{{}}}", &self.name);
         let end = format!(r"\end{{{}}}", &self.name);
-        let strings = vec![
-            begin,
-            self.inner_latex_string(),
-            end,
-        ];
+        let strings = vec![begin, self.inner_latex_string(), end];
         strings.join("\n")
     }
 }
@@ -179,7 +165,6 @@ impl Tex for Metadata {
         result.join("\n")
     }
 }
-
 
 impl Into<Element<Any>> for Part {
     fn into(self) -> Element<Any> {
@@ -345,21 +330,20 @@ impl<T: Tex> Element<T> {
 }
 
 /// A linked list of elements
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialOrd, PartialEq)]
 pub struct ElementList<T: Tex> {
     metadata: Metadata,
     list: LinkedList<Element<T>>,
 }
 
-
 impl ElementList<Any> {
     /// Creates a new empty list
     pub fn new(
-        author: String,
-        date: String,
-        title: String,
+        author: &str,
+        date: &str,
+        title: &str,
         fontsize: u8,
-        doc_class: String,
+        doc_class: &str,
         maketitle: bool,
     ) -> Self {
         Self {
@@ -369,12 +353,18 @@ impl ElementList<Any> {
     }
     /// Adds in `\newpage` text as next element in the list
     pub fn add_newpage(&mut self) {
-        let text = Text::new(r"\newpage".to_string(), Normal);
+        let text = Text::new(r"\newpage", Normal);
         self.push(text.into());
     }
     /// Pushes an element to the end of the list
     pub fn push(&mut self, element: Element<Any>) {
         self.list.push_back(element)
+    }
+    /// Pushes an element vector into the list
+    pub fn push_array(&mut self, element_vec: Vec<Element<Any>>) {
+        for element in element_vec {
+            self.push(element)
+        }
     }
     /// Pops an element at the end of the list
     pub fn pop(&mut self) -> Option<Element<Any>> {
@@ -432,7 +422,7 @@ impl ElementList<Any> {
         result.push(document.join("\n"));
         result.join("\n")
     }
-    /// Walks the list and returns a split latex string seperating Packages level
+    /// Walks the list and returns a split latex string separating Packages level
     pub fn to_latex_split_string(self) -> (String, String) {
         let mut meta = Vec::new();
         meta.push(self.metadata.to_latex_string().to_owned());
@@ -477,7 +467,7 @@ impl ElementList<Any> {
         Ok(())
     }
     /// Compiles the list into a pdf file
-    pub fn compile(self, path: PathBuf) -> Result<(), std::io::Error> {
+    pub fn compile(self, path: PathBuf) -> Result<(), Error> {
         let mut file = File::create(path)?;
         let pdf = latex_to_pdf(self.to_latex_string())?;
         file.write_all(&pdf)?;
@@ -490,8 +480,8 @@ impl ElementList<Any> {
     /// Returns &self.list to Vec<Any>
     pub fn list_to_vec(&self) -> Vec<Element<Any>> {
         let mut vec = Vec::new();
-        for l in self.list.clone() {
-            vec.push(l)
+        for l in &self.list {
+            vec.push(l.to_owned())
         }
         vec
     }
@@ -501,8 +491,11 @@ impl ElementList<Any> {
     }
 }
 
-impl Default for ElementList<Any>{
+impl Default for ElementList<Any> {
     fn default() -> Self {
-        Self { metadata: Metadata::default(), list: LinkedList::new() }
+        Self {
+            metadata: Metadata::default(),
+            list: LinkedList::new(),
+        }
     }
 }

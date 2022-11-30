@@ -4,24 +4,24 @@ use texcore::{Chapter, ElementList, Header, Package, Part, Text};
 
 fn main() {
     let mut list = ElementList::new(
-        "Author".to_string(),
-        "date".to_string(),
-        "title".to_string(),
+        "Author",
+        "date",
+        "title",
         11,
-        "book".to_string(),
+        "book",
         true,
     );
-    let part = Part::new("part".to_string());
+    let part = Part::new("part");
     list.push(part.into());
-    let chapter = Chapter::new("chapter".to_string());
+    let chapter = Chapter::new("chapter");
     list.push(chapter.into());
-    let header1 = Header::new("header1".to_string(), 1);
+    let header1 = Header::new("header1", 1);
     list.push(header1.into());
-    let header2 = Header::new("header2".to_string(), 2);
+    let header2 = Header::new("header2", 2);
     list.push(header2.into());
-    let text = Text::new("text".to_string(), Normal);
+    let text = Text::new("text", Normal);
     list.push(text.into());
-    let pkg = Package::new("dramatist".to_string());
+    let pkg = Package::new("dramatist");
     list.push(pkg.into());
     // To compile:
     //list.compile(PathBuf::from("test.pdf")).unwrap();
