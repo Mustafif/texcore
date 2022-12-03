@@ -3,14 +3,7 @@ use texcore::TextType::Normal;
 use texcore::{Chapter, ElementList, Header, Package, Part, Text};
 
 fn main() {
-    let mut list = ElementList::new(
-        "Author",
-        "date",
-        "title",
-        11,
-        "book",
-        true,
-    );
+    let mut list = ElementList::new("Author", "date", "title", 11, "book", true);
     let part = Part::new("part");
     list.push(part.into());
     let chapter = Chapter::new("chapter");

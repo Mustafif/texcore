@@ -123,7 +123,10 @@ pub struct Custom {
 
 impl Custom {
     pub fn new(value: &str, level: Level) -> Self {
-        Self { value: value.to_string(), level }
+        Self {
+            value: value.to_string(),
+            level,
+        }
     }
 }
 
@@ -136,7 +139,10 @@ pub struct Input {
 
 impl Input {
     pub fn new(file_name: &str, level: Option<Level>) -> Self {
-        Self { file_name: file_name.to_string(), level }
+        Self {
+            file_name: file_name.to_string(),
+            level,
+        }
     }
 }
 
@@ -148,7 +154,9 @@ pub struct Package {
 
 impl Package {
     pub fn new(pkg: &str) -> Self {
-        Self { pkg: pkg.to_string() }
+        Self {
+            pkg: pkg.to_string(),
+        }
     }
 }
 
@@ -160,7 +168,9 @@ pub struct Part {
 
 impl Part {
     pub fn new(name: &str) -> Self {
-        Self { name: name.to_string() }
+        Self {
+            name: name.to_string(),
+        }
     }
 }
 
@@ -172,7 +182,9 @@ pub struct Chapter {
 
 impl Chapter {
     pub fn new(name: &str) -> Self {
-        Self { name: name.to_string() }
+        Self {
+            name: name.to_string(),
+        }
     }
 }
 
@@ -185,7 +197,10 @@ pub struct Header {
 
 impl Header {
     pub fn new(name: &str, header_level: u8) -> Self {
-        Self { name: name.to_string(), header_level }
+        Self {
+            name: name.to_string(),
+            header_level,
+        }
     }
 }
 
@@ -198,7 +213,10 @@ pub struct Text {
 
 impl Text {
     pub fn new(content: &str, type_: TextType) -> Self {
-        Self { content: content.to_string(), type_ }
+        Self {
+            content: content.to_string(),
+            type_,
+        }
     }
 }
 
@@ -210,7 +228,9 @@ pub struct Paragraph {
 
 impl Paragraph {
     pub fn new(content: &str) -> Self {
-        Self { content: content.to_string() }
+        Self {
+            content: content.to_string(),
+        }
     }
 }
 
@@ -235,6 +255,8 @@ pub struct Item {
 
 impl Item {
     pub fn new(name: &str) -> Self {
-        Self { name: name.to_string() }
+        Self {
+            name: name.to_string(),
+        }
     }
 }

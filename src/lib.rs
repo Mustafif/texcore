@@ -20,7 +20,8 @@
 //! let header2 = Header::new("header2", 2);
 //! let text = Text::new("text", Normal);
 //! list.push_array(Elements![part, chapter, header1, header2, text]);
-//! list.compile(PathBuf::from("test.pdf")).unwrap();
+//! // Compile requires compile feature
+//! // list.compile(PathBuf::from("test.pdf")).unwrap();
 //! // Or to write tex file
 //! // list.write(path1, path2 (Optional), split).unwrap();
 //! }
@@ -37,11 +38,15 @@ pub mod type_;
 
 pub use element::*;
 pub use level::*;
+#[cfg(feature = "compile")]
 use std::io::{Error, Write};
+#[cfg(feature = "compile")]
 use std::path::PathBuf;
+#[cfg(feature = "compile")]
 use tectonic::latex_to_pdf;
 pub use type_::*;
 
+#[cfg(feature = "compile")]
 /// Compiles a tex file to a pdf file
 pub fn compile(path: PathBuf, output_path: PathBuf) -> Result<(), Error> {
     let source = std::fs::read_to_string(path)?;
@@ -50,6 +55,7 @@ pub fn compile(path: PathBuf, output_path: PathBuf) -> Result<(), Error> {
     output.write_all(&pdf)?;
     Ok(())
 }
+
 /// returns a vector of Element<Any>
 #[macro_export]
 macro_rules! Elements {
@@ -68,14 +74,10 @@ macro_rules! Elements {
 fn test_elements_macro() {
     let part = Part::new("part1");
     let chapter = Chapter::new("chatper1");
-    let mut list1 = ElementList::new(
-        "Author", "date", "title", 11, "article", false,
-    );
+    let mut list1 = ElementList::new("Author", "date", "title", 11, "article", false);
     list1.push(part.clone().into());
     list1.push(chapter.clone().into());
-    let mut list2 = ElementList::new(
-        "Author", "date", "title", 11, "article", false,
-    );
+    let mut list2 = ElementList::new("Author", "date", "title", 11, "article", false);
     let elem_vec = Elements![part, chapter];
     list2.push_array(elem_vec);
     assert_eq!(list1, list2)

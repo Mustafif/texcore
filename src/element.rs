@@ -7,6 +7,7 @@ use std::collections::LinkedList;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
+#[cfg(feature = "compile")]
 use tectonic::latex_to_pdf;
 
 /// Converts a struct to a string
@@ -23,8 +24,7 @@ impl Tex for Any {
             T_Chapter => Chapter::new(&self.value).to_latex_string(),
             T_Header => {
                 if self.header_level.is_some() {
-                    Header::new(&self.value, self.header_level.unwrap())
-                        .to_latex_string()
+                    Header::new(&self.value, self.header_level.unwrap()).to_latex_string()
                 } else {
                     Header::new(&self.value, 1).to_latex_string()
                 }
@@ -466,10 +466,12 @@ impl ElementList<Any> {
         }
         Ok(())
     }
+    #[cfg(feature = "compile")]
     /// Compiles the list into a pdf file
     pub fn compile(self, path: PathBuf) -> Result<(), Error> {
         let mut file = File::create(path)?;
-        let pdf = latex_to_pdf(self.to_latex_string())?;
+        let latex = self.to_latex_string();
+        let pdf = latex_to_pdf(&latex)?;
         file.write_all(&pdf)?;
         Ok(())
     }
