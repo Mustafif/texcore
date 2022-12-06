@@ -166,10 +166,10 @@ impl Tex for Metadata {
     }
 }
 
-impl Into<Element<Any>> for Part {
-    fn into(self) -> Element<Any> {
+impl From<Part> for Element<Any> {
+    fn from(part: Part) -> Self {
         let any = Any {
-            value: self.name,
+            value: part.name,
             type_: T_Part,
             level: None,
             header_level: None,
@@ -182,18 +182,10 @@ impl Into<Element<Any>> for Part {
     }
 }
 
-impl From<Element<Any>> for Part {
-    fn from(value: Element<Any>) -> Self {
-        Part {
-            name: value.value.value.clone()
-        }
-    }
-}
-
-impl Into<Element<Any>> for Chapter {
-    fn into(self) -> Element<Any> {
+impl From<Chapter> for Element<Any> {
+    fn from(chapter: Chapter) -> Self {
         let any = Any {
-            value: self.name,
+            value: chapter.name,
             type_: T_Chapter,
             level: None,
             header_level: None,
@@ -206,19 +198,13 @@ impl Into<Element<Any>> for Chapter {
     }
 }
 
-impl From<Element<Any>> for Chapter {
-    fn from(value: Element<Any>) -> Self {
-        Chapter { name: value.value.value.clone() }
-    }
-}
-
-impl Into<Element<Any>> for Header {
-    fn into(self) -> Element<Any> {
+impl From<Header> for Element<Any> {
+    fn from(header: Header) -> Self {
         let any = Any {
-            value: self.name,
+            value: header.name,
             type_: T_Header,
             level: None,
-            header_level: Some(self.header_level),
+            header_level: Some(header.header_level),
             text_type: None,
             list_type: None,
             items: None,
@@ -228,16 +214,10 @@ impl Into<Element<Any>> for Header {
     }
 }
 
-impl From<Element<Any>> for Header {
-    fn from(value: Element<Any>) -> Self {
-        Header { name: value.value.value.clone(), header_level: value.value.header_level.unwrap() }
-    }
-}
-
-impl Into<Element<Any>> for Paragraph {
-    fn into(self) -> Element<Any> {
+impl From<Paragraph> for Element<Any> {
+    fn from(paragraph: Paragraph) -> Self {
         let any = Any {
-            value: self.content,
+            value: paragraph.content,
             type_: T_Paragraph,
             level: None,
             header_level: None,
@@ -250,20 +230,14 @@ impl Into<Element<Any>> for Paragraph {
     }
 }
 
-impl From<Element<Any>> for Paragraph {
-    fn from(value: Element<Any>) -> Self {
-        Paragraph { content: value.value.value.clone() }
-    }
-}
-
-impl Into<Element<Any>> for Text {
-    fn into(self) -> Element<Any> {
+impl From<Text> for Element<Any> {
+    fn from(text: Text) -> Self {
         let any = Any {
-            value: self.content,
+            value: text.content,
             type_: T_Text,
             level: None,
             header_level: None,
-            text_type: Some(self.type_),
+            text_type: Some(text.type_),
             list_type: None,
             items: None,
             elements: None,
@@ -272,97 +246,67 @@ impl Into<Element<Any>> for Text {
     }
 }
 
-impl From<Element<Any>> for Text {
-    fn from(value: Element<Any>) -> Self {
-        Text { content: value.value.value.clone(), type_: value.value.text_type.unwrap() }
-    }
-}
-
-impl Into<Element<Any>> for Package {
-    fn into(self) -> Element<Any> {
+impl From<Package> for Element<Any> {
+    fn from(package: Package) -> Self {
         let any = Any {
-            value: self.pkg,
+            value: package.pkg,
             type_: T_Package,
-            level: Some(Packages),
+            level: None,
             header_level: None,
             text_type: None,
             list_type: None,
             items: None,
             elements: None,
         };
-        Element::new(any.clone(), T_Package, any.level.unwrap())
+        Element::new(any, T_Package, Packages)
     }
 }
 
-impl From<Element<Any>> for Package {
-    fn from(value: Element<Any>) -> Self {
-        Package { pkg: value.value.value.clone() }
-    }
-}
-
-impl Into<Element<Any>> for Input {
-    fn into(self) -> Element<Any> {
+impl From<Input> for Element<Any> {
+    fn from(input: Input) -> Self {
         let any = Any {
-            value: self.file_name,
+            value: input.file_name,
             type_: T_Input,
-            level: self.level,
+            level: input.level,
             header_level: None,
             text_type: None,
             list_type: None,
             items: None,
             elements: None,
         };
-        Element::new(any.clone(), T_Input, any.level.unwrap())
+        Element::new(any, T_Input, input.level.unwrap())
     }
 }
 
-impl From<Element<Any>> for Input {
-    fn from(value: Element<Any>) -> Self {
-        Input { file_name: value.value.value.clone(), level: value.value.level }
-    }
-}
-
-impl Into<Element<Any>> for Environment {
-    fn into(self) -> Element<Any> {
+impl From<Environment> for Element<Any> {
+    fn from(environment: Environment) -> Self {
         let any = Any {
-            value: self.name,
+            value: environment.name,
             type_: T_Environment,
-            level: Some(Document),
+            level: None,
             header_level: None,
             text_type: None,
             list_type: None,
             items: None,
-            elements: Some(self.elements),
+            elements: Some(environment.elements),
         };
-        Element::new(any.clone(), T_Environment, any.level.unwrap())
+        Element::new(any, T_Environment, Document)
     }
 }
 
-impl From<Element<Any>> for Environment {
-    fn from(value: Element<Any>) -> Self {
-        Environment { name: value.value.value.clone(), elements: value.value.elements.clone().unwrap() }
-    }
-}
-
-impl Into<Element<Any>> for Custom {
-    fn into(self) -> Element<Any> {
+impl From<Custom> for Element<Any> {
+    fn from(custom: Custom) -> Self {
         let any = Any {
-            value: self.value,
+            value: custom.value,
             type_: T_Custom,
-            level: Some(self.level),
+            level: Some(custom.level),
             header_level: None,
             text_type: None,
             list_type: None,
             items: None,
             elements: None,
         };
-        Element::new(any.clone(), T_Custom, any.level.unwrap())
-    }
-}
-
-impl From<Element<Any>> for Custom {
-    fn from(value: Element<Any>) -> Self {
-        Custom { value: value.value.value.clone(), level: value.value.level.unwrap() }
+        Element::new(any, T_Custom, custom.level)
     }
 }
 
