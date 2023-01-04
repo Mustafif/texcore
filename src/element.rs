@@ -5,7 +5,7 @@ use crate::*;
 use serde::{Deserialize, Serialize};
 use std::collections::LinkedList;
 use std::fs::File;
-use std::io::Write;
+use std::io::{Write, Error};
 use std::path::PathBuf;
 #[cfg(feature = "compile")]
 use tectonic::latex_to_pdf;
@@ -23,8 +23,8 @@ impl Tex for Any {
             T_Part => Part::new(&self.value).to_latex_string(),
             T_Chapter => Chapter::new(&self.value).to_latex_string(),
             T_Header => {
-                if self.header_level.is_some() {
-                    Header::new(&self.value, self.header_level.unwrap()).to_latex_string()
+                if let Some(hl) = self.header_level {
+                    Header::new(&self.value, hl).to_latex_string()
                 } else {
                     Header::new(&self.value, 1).to_latex_string()
                 }
@@ -36,15 +36,23 @@ impl Tex for Any {
             },
             T_Environment => {
                 let mut env = Environment::new(&self.value);
-                env.set_elements(self.elements.clone().unwrap());
+                if let Some(elements) = &self.elements {
+                    env.set_elements(elements.to_owned())
+                }
                 env.to_latex_string()
             }
             T_Custom => self.value.clone(),
             T_List => match self.list_type {
                 None => {
-                    List::new(ListType::Itemized, self.items.clone().unwrap()).to_latex_string()
+                    if let Some(items) = &self.items {
+                        List::new(ListType::Itemized, items.to_owned()).to_latex_string()
+                    }
                 }
-                Some(s) => List::new(s, self.items.clone().unwrap()).to_latex_string(),
+                Some(ty) => {
+                    if let Some(items) = &self.items {
+                        List::new(ty, items.to_owned()).to_latex_string()
+                    }
+                }
             },
             T_Item => Item::new(&self.value).to_latex_string(),
         }
@@ -379,10 +387,10 @@ impl ElementList<Any> {
         self.list.pop_front()
     }
     /// Sorts the list going from Meta, Packages, Document and returns new list
-    pub fn sort(self) -> Self {
+    pub fn sort(&self) -> Self {
         let mut elements = Vec::new();
-        for i in self.list {
-            elements.push(i)
+        for i in &self.list {
+            elements.push(i.to_owned())
         }
         let mut new = LinkedList::new();
         let meta = self.metadata.clone();
@@ -398,7 +406,7 @@ impl ElementList<Any> {
         }
     }
     /// Walks the list and returns a combined latex string
-    pub fn to_latex_string(self) -> String {
+    pub fn to_latex_string(&self) -> String {
         let mut meta = Vec::new();
         meta.push(self.metadata.to_latex_string().to_owned());
         let mut packages = Vec::new();
@@ -407,8 +415,8 @@ impl ElementList<Any> {
         if self.metadata.maketitle {
             document.push(r"\maketitle".to_owned());
         }
-        let sort = self.sort();
-        for i in &sort.list {
+        let mut sort = self.sort();
+        while let Some(i) = sort.pop() {
             match i.level {
                 Document => document.push(i.value.to_latex_string()),
                 Packages => packages.push(i.value.to_latex_string()),
@@ -423,7 +431,7 @@ impl ElementList<Any> {
         result.join("\n")
     }
     /// Walks the list and returns a split latex string separating Packages level
-    pub fn to_latex_split_string(self) -> (String, String) {
+    pub fn to_latex_split_string(&self) -> (String, String) {
         let mut meta = Vec::new();
         meta.push(self.metadata.to_latex_string().to_owned());
         let mut packages = Vec::new();
@@ -432,8 +440,8 @@ impl ElementList<Any> {
         if self.metadata.maketitle {
             document.push(r"\maketitle".to_owned());
         }
-        let sort = self.sort();
-        for i in &sort.list {
+        let mut sort = self.sort();
+        while let Some(i) = sort.pop() {
             match i.level {
                 Document => document.push(i.value.to_latex_string()),
                 Packages => packages.push(i.value.to_latex_string()),
@@ -448,11 +456,11 @@ impl ElementList<Any> {
     }
     /// Writes files from turning list into string
     pub fn write(
-        self,
+        &self,
         path1: PathBuf,
         path2: Option<PathBuf>,
         split: bool,
-    ) -> Result<(), std::io::Error> {
+    ) -> Result<(), Error> {
         let (seg1, seg2) = if split {
             self.to_latex_split_string()
         } else {
@@ -468,7 +476,7 @@ impl ElementList<Any> {
     }
     #[cfg(feature = "compile")]
     /// Compiles the list into a pdf file
-    pub fn compile(self, path: PathBuf) -> Result<(), Error> {
+    pub fn compile(&self, path: PathBuf) -> Result<(), Error> {
         let mut file = File::create(path)?;
         let latex = self.to_latex_string();
         let pdf = latex_to_pdf(&latex)?;
@@ -476,7 +484,7 @@ impl ElementList<Any> {
         Ok(())
     }
     /// Prints the whole tex source code
-    pub fn cat(self) {
+    pub fn print_tex(&self) {
         println!("{}", self.to_latex_string());
     }
     /// Returns &self.list to Vec<Any>

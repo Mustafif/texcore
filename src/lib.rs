@@ -57,6 +57,7 @@ pub fn compile(path: PathBuf, output_path: PathBuf) -> Result<(), Error> {
 }
 
 /// returns a vector of Element<Any>
+#[allow(non_snake_case)]
 #[macro_export]
 macro_rules! Elements {
     ($($element: expr), *) => {
