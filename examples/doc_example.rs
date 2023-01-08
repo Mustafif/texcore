@@ -1,25 +1,28 @@
+use std::io::Error;
 use std::path::PathBuf;
-use texcore::TextType::Normal;
-use texcore::{Chapter, ElementList, Header, Package, Part, Text};
 
-fn main() {
-    let mut list = ElementList::new("Author", "date", "title", 11, "book", true);
+use texcore::Elements;
+use texcore::*;
+
+fn main() -> Result<(), Error> {
+    let metadata = Metadata::new("Author", "date", "title", 11, "book", true);
+    let mut list = ElementList::new(&metadata);
     let part = Part::new("part");
-    list.push(part.into());
     let chapter = Chapter::new("chapter");
-    list.push(chapter.into());
     let header1 = Header::new("header1", 1);
-    list.push(header1.into());
     let header2 = Header::new("header2", 2);
-    list.push(header2.into());
-    let text = Text::new("text", Normal);
-    list.push(text.into());
+    let text = Text::new("text", TextType::Normal);
     let pkg = Package::new("dramatist");
-    list.push(pkg.into());
-    // To compile:
-    //list.compile(PathBuf::from("test.pdf")).unwrap();
-    // To write tex file:
-    // list.write(PathBuf::from("test.tex"), None, false).unwrap();
-    // To print:
-    // list.cat();
+    list.push_array(Elements![part, chapter, header1, header2, text, pkg]);
+    /*
+        To compile, use the `compile` feature
+        list.compile(PathBuf::from("test.pdf");
+        To write to single tex file:
+        list.write(PathBuf::from("test.tex"))?;
+        To split write Packages and Main file:
+        list.write_split(PathBuf::from("main.tex"), PathBuf::from("structure.tex"))?;
+        To print:
+        list.print_tex();
+    */
+    Ok(())
 }

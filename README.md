@@ -2,14 +2,14 @@
 
 > This project is under the [MIT License](LICENSE)
 
-Texcore is the successor to `tex-rs` and uses linked lists to help walk and sort elements to either
+TexCore is the successor to `tex-rs` and uses linked lists to help walk and sort elements to either
 write to tex code or compile to pdf.
 
 To add to your project:
 
 ```toml
 [dependencies]
-texcore = "0.3"
+texcore = "0.4"
 ```
 
 ### The Compile Feature
@@ -20,34 +20,29 @@ are hidden under this feature.
 
 ```toml
 [dependencies]
-texcore = { version = "0.3", features = ["compile"] }
+texcore = { version = "0.4", features = ["compile"] }
 ```
 
-## Example
+### The TexCreate Template Feature
 
-```rust
-use std::path::PathBuf;
-use texcore::{Chapter, ElementList, Header, Part, Text};
-use texcore::TextType::Normal;
+To allow easier development with the TexCreate project, I have decided to add the `texcreate-templates` portion under
+the `texcreate_template` feature. This feature also uses the `compile` feature as long as the dependency `serde_json`.
 
-fn main() {
-    use texcore::Elements;
-    let mut list = ElementList::new(
-        "Author",
-        "date",
-        "title",
-        11,
-        "book",
-        false);
-    let part = Part::new("part");
-    let chapter = Chapter::new("chapter");
-    let header1 = Header::new("header1", 1);
-    let header2 = Header::new("header2", 2);
-    let text = Text::new("text", Normal);
-    list.push_array(Elements![part, chapter, header1, header2, text]);
-    // Use the compile feature to turn the list into a pdf file
-    // list.compile(PathBuf::from("test.pdf")).unwrap();
-    // Or to write tex file
-    // list.write(path1, path2 (Optional), split).unwrap();
-}
+```toml
+texcore = { version = "0.4", features = ["texcreate_template"] }
 ```
+
+Read documentation [here](https://docs.rs/crate/texcore/latest)
+
+## Changes in 0.4.0
+
+- `ElementList::new()` has been changed so it needs `&Metadata` as an argument
+- Fixed the `From` trait that is implement for all of the `Tex` types for `Element<Any>`
+
+The following functions uses `ElementList` mutably, as well as other described changes:
+
+- `ElementList::to_latex_string()` & `ElementList::to_latex_split_string()` have been modified.
+    - No longer use a `sort()` method and instead utilizes `fpop()`.
+- The `ElementList::write()` function has been split into two different functions:
+    - `ElementList::write()`: Writes to a file given a path, `main`
+    - `ElementList::write_split()`: Write to two files by splitting the meta + document and packages level

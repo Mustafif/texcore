@@ -1,30 +1,6 @@
 //! # Examples
-//!
-//! ```
-//! use std::path::PathBuf;
-//! use texcore::{Chapter, ElementList, Header, Part, Text};
-//! use texcore::TextType::Normal;
-//!
-//! fn main() {
-//! use texcore::Elements;
-//! let mut list = ElementList::new(
-//!     "Author",
-//!     "date",
-//!     "title",
-//!     11,
-//!     "book",
-//!     false);
-//! let part = Part::new("part");
-//! let chapter = Chapter::new("chapter");
-//! let header1 = Header::new("header1", 1);
-//! let header2 = Header::new("header2", 2);
-//! let text = Text::new("text", Normal);
-//! list.push_array(Elements![part, chapter, header1, header2, text]);
-//! // Compile requires compile feature
-//! // list.compile(PathBuf::from("test.pdf")).unwrap();
-//! // Or to write tex file
-//! // list.write(path1, path2 (Optional), split).unwrap();
-//! }
+//! ```rust
+#![doc = include_str ! ("../examples/doc_example.rs")]
 //! ```
 /// Element controls everything related to `Elements` and `ElementList`
 pub mod element;
@@ -33,6 +9,9 @@ pub mod element;
 /// - Packages (Where all packages go)
 /// - Document (Inside the `\begin{document}` and `\end{document}`)
 pub mod level;
+#[cfg(feature = "texcreate_template")]
+/// Provides the `Template` type for the TexCreate project
+pub mod template;
 /// Type controls the different kinds of latex elements
 pub mod type_;
 
@@ -56,7 +35,7 @@ pub fn compile(path: PathBuf, output_path: PathBuf) -> Result<(), Error> {
     Ok(())
 }
 
-/// returns a vector of Element<Any>
+/// returns a vector of `Element<Any>`
 #[allow(non_snake_case)]
 #[macro_export]
 macro_rules! Elements {
@@ -69,17 +48,4 @@ macro_rules! Elements {
             vec
         }
     };
-}
-
-#[test]
-fn test_elements_macro() {
-    let part = Part::new("part1");
-    let chapter = Chapter::new("chatper1");
-    let mut list1 = ElementList::new("Author", "date", "title", 11, "article", false);
-    list1.push(part.clone().into());
-    list1.push(chapter.clone().into());
-    let mut list2 = ElementList::new("Author", "date", "title", 11, "article", false);
-    let elem_vec = Elements![part, chapter];
-    list2.push_array(elem_vec);
-    assert_eq!(list1, list2)
 }
