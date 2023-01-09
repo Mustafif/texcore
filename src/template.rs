@@ -55,7 +55,7 @@ impl Template {
         html.join("\n")
     }
     /// Pushes a Template as an entry
-    pub fn push_to_map(&self, map: &mut Map) -> Option<String> {
+    pub fn push_to_map(&self, map: &mut Map) {
         let name = self.name.to_string();
         let json = self.to_json_string();
         let entry = Entry::new(name, json);
