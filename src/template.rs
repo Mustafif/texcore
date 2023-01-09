@@ -112,16 +112,12 @@ impl Entry {
             json,
         }
     }
-    /// Returns a tuple of the name and json
-    pub fn get<'a>(&self) -> (&'a str, &'a str) {
-        (&self.name, &self.json)
-    }
     /// Returns a reference to the name
-    pub fn get_name<'a>(&self) -> &'a str {
-        &self.name
+    pub fn get_name(&self) -> String {
+        self.name.to_string()
     }
     /// Returns a reference to the json template
-    pub fn get_json<'a>(&self) -> &'a str {
-        &self.json
+    pub fn get_json(&self) -> String {
+        self.json.to_string()
     }
 }
