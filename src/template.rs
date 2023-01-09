@@ -55,12 +55,13 @@ impl Template {
         html.join("\n")
     }
     /// Pushes a Template as an entry
-    pub fn push_to_map(&self, map: &mut Map) {
+    pub fn push_to_map(&self, map: &mut Map) -> Uuid {
         let name = self.name.to_string();
         let json = self.to_json_string();
         let entry = Entry::new(name, json);
         let id = Uuid::new_v4();
-        let _ = map.insert(id, entry);
+        let _ = map.insert(id.clone(), entry);
+        id
     }
     /// Pushes an element to the template
     pub fn push_element(&self, element: Element<Any>) {
