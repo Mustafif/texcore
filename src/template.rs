@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use std::fs::{File, read_to_string};
 use std::io::{Result, Write};
 use std::path::PathBuf;
+use uuid::Uuid;
 
 /// A TexCreate-template that will be used to store and create TexCreate projects
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, PartialOrd)]
@@ -53,32 +54,13 @@ impl Template {
         html.push("</code>".to_owned());
         html.join("\n")
     }
-    /// Pushes the template as an entry to `HashMap<String, String>`
-    ///
-    /// - The key is the name of the template
-    /// - The value is the template as JSON string
-    pub fn push_to_map(&self, map: &mut HashMap<String, String>) -> Option<String> {
+    /// Pushes a Template as an entry
+    pub fn push_to_map(&self, map: &mut Map) -> Option<String> {
         let name = self.name.to_string();
-        let template = self.to_json_string();
-        // If the template's name already exists in the map, we have a problem
-        // We cannot override unless we have more information
-        match map.get(&name) {
-            None => {
-                // key doesn't exist, we are free to inset
-                let _ = map.insert(name, template);
-                return None;
-            }
-            Some(v) => {
-                // if value isn't equal to template, that means we got a problem
-                if v != &template {
-                    Some(template)
-                }
-                // if value is equal to template, we don't need to do anything
-                else {
-                    return None;
-                }
-            }
-        }
+        let json = self.to_json_string();
+        let entry = Entry::new(name, json);
+        let id = Uuid::new_v4();
+        let _ = map.insert(id, entry);
     }
     /// Pushes an element to the template
     pub fn push_element(&self, element: Element<Any>) {
@@ -110,5 +92,36 @@ impl Template {
 impl Tex for Template {
     fn to_latex_string(&self) -> String {
         self.element_list.borrow_mut().to_latex_for_html()
+    }
+}
+
+/// A Hashmap with an entry connected to a unique id
+pub type Map = HashMap<Uuid, Entry>;
+
+/// A Template entry that is stored in the archiver
+pub struct Entry {
+    name: String,
+    json: String,
+}
+
+impl Entry {
+    /// Creates a new Entry using a name and the template as json
+    pub fn new(name: String, json: String) -> Self {
+        Self {
+            name,
+            json,
+        }
+    }
+    /// Returns a tuple of the name and json
+    pub fn get<'a>(&self) -> (&'a str, &'a str) {
+        (&self.name, &self.json)
+    }
+    /// Returns a reference to the name
+    pub fn get_name<'a>(&self) -> &'a str {
+        &self.name
+    }
+    /// Returns a reference to the json template
+    pub fn get_json<'a>(&self) -> &'a str {
+        &self.json
     }
 }
