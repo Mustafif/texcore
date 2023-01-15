@@ -11,21 +11,19 @@ use uuid::Uuid;
 /// A TexCreate-template that will be used to store and create TexCreate projects
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, PartialOrd)]
 pub struct Template {
-    name: String,
-    author: String,
-    license: String,
-    description: String,
+    pub name: String,
+    pub description: String,
+    pub version: Version,
     element_list: RefCell<ElementList<Any>>,
 }
 
 impl Template {
     /// Creates a new template using metadata (`&Metadata`), license (`&str`) and a description (`&str`)
-    pub fn new(metadata: &Metadata, license: &str, desc: &str) -> Self {
+    pub fn new(name: &str, description: &str, metadata: &Metadata) -> Self {
         Self {
-            name: metadata.title.to_string(),
-            author: metadata.author.to_string(),
-            license: license.to_string(),
-            description: desc.to_string(),
+            name: name.to_string(),
+            description: description.to_string(),
+            version: Version::new(),
             element_list: RefCell::new(ElementList::new(metadata)),
         }
     }
@@ -43,25 +41,8 @@ impl Template {
         to_string_pretty(&self).unwrap()
     }
     /// Returns the details of the template as HTML code
-    pub fn to_html(&self) -> String {
-        let mut html = Vec::new();
-        html.push(format!("<h2>{}</h2>", &self.name));
-        html.push(format!("<h3>By {}</h3>", &self.author));
-        html.push(format!("<h4>Under the {} License</h4>", &self.license));
-        html.push(format!("<h5>{}</h5>", &self.description));
-        html.push("<code>".to_owned());
-        html.push(self.to_latex_string());
-        html.push("</code>".to_owned());
-        html.join("\n")
-    }
-    /// Pushes a Template as an entry
-    pub fn push_to_map(&self, map: &mut Map) -> Uuid {
-        let name = self.name.to_string();
-        let json = self.to_json_string();
-        let entry = Entry::new(name, json);
-        let id = Uuid::new_v4();
-        let _ = map.insert(id.clone(), entry);
-        id
+    pub fn to_latex_for_html(&self) -> String {
+        self.element_list.borrow_mut().to_latex_for_html()
     }
     /// Pushes an element to the template
     pub fn push_element(&self, element: Element<Any>) {
@@ -92,33 +73,42 @@ impl Template {
 
 impl Tex for Template {
     fn to_latex_string(&self) -> String {
-        self.element_list.borrow_mut().to_latex_for_html()
+        self.element_list.borrow_mut().to_latex_string()
     }
 }
 
-/// A Hashmap with an entry connected to a unique id
-pub type Map = HashMap<Uuid, Entry>;
-
-/// A Template entry that is stored in the archiver
-pub struct Entry {
-    name: String,
-    json: String,
+// Semantic versioning for Templates
+#[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq, PartialOrd)]
+pub struct Version {
+    major: u8,
+    minor: u8,
+    patch: u8,
 }
 
-impl Entry {
-    /// Creates a new Entry using a name and the template as json
-    pub fn new(name: String, json: String) -> Self {
+impl Version {
+    /// Creates Template with default `v1.0.0`
+    pub fn new() -> Self {
         Self {
-            name,
-            json,
+            major: 1,
+            minor: 0,
+            patch: 0,
         }
     }
-    /// Returns a reference to the name
-    pub fn get_name(&self) -> String {
-        self.name.to_string()
+    pub fn bump_major(&mut self) {
+        self.major += 1;
     }
-    /// Returns a reference to the json template
-    pub fn get_json(&self) -> String {
-        self.json.to_string()
+    pub fn bump_minor(&mut self) {
+        self.minor += 1;
+    }
+    pub fn bump_patch(&mut self) {
+        self.patch += 1;
+    }
+    pub fn set_version(&mut self, major: u8, minor: u8, patch: u8) {
+        self.major = major;
+        self.minor = minor;
+        self.patch = patch;
+    }
+    pub fn to_string(&self) -> String {
+        format!("v{}.{}.{}", self.major, self.minor, self.patch)
     }
 }
