@@ -66,7 +66,7 @@ impl Template {
     /// Writes the Template as an HTML file
     pub fn write_as_html(&self, html_path: PathBuf) -> Result<()> {
         let mut file = File::create(html_path)?;
-        file.write_all(self.to_html().as_bytes())?;
+        file.write_all(self.to_latex_for_html().as_bytes())?;
         Ok(())
     }
 }
