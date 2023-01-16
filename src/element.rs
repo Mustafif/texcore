@@ -164,7 +164,6 @@ impl Tex for List {
     }
 }
 
-#[cfg(not(feature = "texcreate_template"))]
 impl Tex for Metadata {
     fn to_latex_string(&self) -> String {
         let doc_class = format!(
@@ -174,21 +173,6 @@ impl Tex for Metadata {
         let title = format!(r"\title{{{}}}", &self.title);
         let author = format!(r"\author{{{}}}", &self.author);
         let date = format!(r"\date{{{}}}", &self.date);
-        let result = vec![doc_class, title, author, date];
-        result.join("\n")
-    }
-}
-
-#[cfg(feature = "texcreate_template")]
-impl Tex for Metadata {
-    fn to_latex_string(&self) -> String {
-        let doc_class = format!(
-            r"\documentclass[{}pt, letterpaper]{{{}}} <br>",
-            &self.fontsize, &self.doc_class
-        );
-        let title = format!(r"\title{{{}}} <br>", &self.title);
-        let author = format!(r"\author{{{}}} <br>", &self.author);
-        let date = format!(r"\date{{{}}} <br>", &self.date);
         let result = vec![doc_class, title, author, date];
         result.join("\n")
     }
@@ -414,32 +398,6 @@ impl ElementList<Any> {
                 Document => document.push(i.value.to_latex_string()),
                 Packages => packages.push(i.value.to_latex_string()),
                 Meta => meta.push(i.value.to_latex_string()),
-            }
-        }
-        document.push(r"\end{document}".to_owned());
-        let mut result = Vec::new();
-        result.push(meta.join("\n"));
-        result.push(packages.join("\n"));
-        result.push(document.join("\n"));
-        result.join("\n")
-    }
-    #[cfg(feature = "texcreate_template")]
-    pub fn to_latex_for_html(&mut self) -> String {
-        let mut meta = Vec::new();
-        meta.push(self.metadata.to_latex_string());
-        let mut packages = Vec::new();
-        let mut document = Vec::new();
-        document.push(r"\begin{document} <br>".to_owned());
-        if self.metadata.maketitle {
-            document.push(r"\maketitle <br>".to_owned());
-        }
-        while let Some(i) = self.fpop() {
-            let mut s = i.value.to_latex_string();
-            s.push_str("<br>");
-            match i.level {
-                Document => document.push(s),
-                Packages => packages.push(s),
-                Meta => meta.push(s),
             }
         }
         document.push(r"\end{document}".to_owned());

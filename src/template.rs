@@ -1,12 +1,10 @@
-use crate::{Any, compile, Element, ElementList, Metadata, Tex};
+use crate::{Any, Element, ElementList, Metadata, Tex};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, to_string_pretty};
 use std::cell::RefCell;
-use std::collections::HashMap;
-use std::fs::{File, read_to_string};
-use std::io::{Result, Write};
+use std::fs::read_to_string;
+use std::io::Result;
 use std::path::PathBuf;
-use uuid::Uuid;
 
 /// A TexCreate-template that will be used to store and create TexCreate projects
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, PartialOrd)]
@@ -40,10 +38,6 @@ impl Template {
     pub fn to_json_string(&self) -> String {
         to_string_pretty(&self).unwrap()
     }
-    /// Returns the details of the template as HTML code
-    pub fn to_latex_for_html(&self) -> String {
-        self.element_list.borrow_mut().to_latex_for_html()
-    }
     /// Pushes an element to the template
     pub fn push_element(&self, element: Element<Any>) {
         self.element_list.borrow_mut().push(element);
@@ -57,16 +51,11 @@ impl Template {
         self.element_list.borrow_mut().write_split(main_path, str_path)?;
         Ok(())
     }
+    #[cfg(feature = "compile")]
     /// Writes then compiles the document
     pub fn write_then_compile(&self, main_path: PathBuf, str_path: PathBuf, pdf_path: PathBuf) -> Result<()> {
         self.write_tex_files(main_path.clone(), str_path)?;
-        compile(main_path, pdf_path)?;
-        Ok(())
-    }
-    /// Writes the Template as an HTML file
-    pub fn write_as_html(&self, html_path: PathBuf) -> Result<()> {
-        let mut file = File::create(html_path)?;
-        file.write_all(self.to_latex_for_html().as_bytes())?;
+        crate::compile(main_path, pdf_path)?;
         Ok(())
     }
 }
@@ -77,7 +66,7 @@ impl Tex for Template {
     }
 }
 
-// Semantic versioning for Templates
+/// Semantic versioning for Templates
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq, PartialOrd)]
 pub struct Version {
     major: u8,
@@ -94,20 +83,25 @@ impl Version {
             patch: 0,
         }
     }
+    /// Increases major version by 1
     pub fn bump_major(&mut self) {
         self.major += 1;
     }
+    /// Increases minor version by 1
     pub fn bump_minor(&mut self) {
         self.minor += 1;
     }
+    /// Increases patch version by 1
     pub fn bump_patch(&mut self) {
         self.patch += 1;
     }
+    /// Sets the version to a specific version
     pub fn set_version(&mut self, major: u8, minor: u8, patch: u8) {
         self.major = major;
         self.minor = minor;
         self.patch = patch;
     }
+    /// Returns the version as a string: `v.major.minor.patch`
     pub fn to_string(&self) -> String {
         format!("v{}.{}.{}", self.major, self.minor, self.patch)
     }

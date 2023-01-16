@@ -26,15 +26,23 @@ texcore = { version = "0.4", features = ["compile"] }
 ### The TexCreate Template Feature
 
 To allow easier development with the TexCreate project, I have decided to add the `texcreate-templates` portion under
-the `texcreate_template` feature. This feature also uses the `compile` feature as long as the dependency `serde_json`.
+the `texcreate_template` feature.
 
 ```toml
 texcore = { version = "0.4", features = ["texcreate_template"] }
 ```
 
+### The Full Feature
+
+To enable both the `compile` and `texcreate_template` feature, you may use the `full` feature.
+
+```toml
+texcore = { version = "0.4", features = ["full"] }
+```
+
 Read documentation [here](https://docs.rs/crate/texcore/latest)
 
-## Changes in 0.4.0
+## Changes in 0.4
 
 - `ElementList::new()` has been changed so it needs `&Metadata` as an argument
 - Fixed the `From` trait that is implement for all of the `Tex` types for `Element<Any>`
@@ -46,3 +54,4 @@ The following functions uses `ElementList` mutably, as well as other described c
 - The `ElementList::write()` function has been split into two different functions:
     - `ElementList::write()`: Writes to a file given a path, `main`
     - `ElementList::write_split()`: Write to two files by splitting the meta + document and packages level
+
