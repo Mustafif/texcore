@@ -411,6 +411,8 @@ impl ElementList<Any> {
     pub fn to_latex_split_string(&mut self) -> (String, String) {
         let mut meta = Vec::new();
         meta.push(self.metadata.to_latex_string());
+        let input = Input::new("structure.tex", Some(Level::Meta));
+        meta.push(input.to_latex_string());
         let mut packages = Vec::new();
         let mut document = Vec::new();
         document.push(r"\begin{document}".to_owned());
@@ -436,11 +438,11 @@ impl ElementList<Any> {
         write_file(main, latex.as_bytes())?;
         Ok(())
     }
-    /// Writes `ElementList` into two latex files splitting the `main` content and `structure` path for packages
+    /// Writes `ElementList` into two latex files splitting the `main` content and `path/structure.tex` path for packages
     pub fn write_split(&mut self, main: PathBuf, structure: PathBuf) -> Result<(), Error> {
         let (main_tex, str_tex) = self.to_latex_split_string();
         write_file(main, main_tex.as_bytes())?;
-        write_file(structure, str_tex.as_bytes())?;
+        write_file(structure.join("structure.tex"), str_tex.as_bytes())?;
         Ok(())
     }
     #[cfg(feature = "compile")]
