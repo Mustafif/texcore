@@ -47,7 +47,7 @@ impl Template {
         self.element_list.borrow_mut().push_array(elements);
     }
     /// Write the tex files from the template
-    fn write_tex_files(&self, main_path: PathBuf, str_path: PathBuf) -> Result<()> {
+    pub fn write_tex_files(&self, main_path: PathBuf, str_path: PathBuf) -> Result<()> {
         self.element_list.borrow_mut().write_split(main_path, str_path)?;
         Ok(())
     }
