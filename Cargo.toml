@@ -1,6 +1,6 @@
 [package]
 name = "texcore"
-version = "0.4.8"
+version = "0.4.9"
 edition = "2021"
 authors = ["Mustafif Khan"]
 description = "Write latex in rust, and either compile it to pdf or output the tex code"
@@ -22,4 +22,4 @@ full = ["compile", "texcreate_template"]
 
 [package.metadata.docs.rs]
 all-features = true
-rustdoc-args = ["-F", "full"]
+features = ["compile", "texcreate_template"]
