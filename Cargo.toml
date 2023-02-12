@@ -1,6 +1,6 @@
 [package]
 name = "texcore"
-version = "0.4.13"
+version = "0.4.14"
 edition = "2021"
 authors = ["Mustafif Khan"]
 description = "Write latex in rust, and either compile it to pdf or output the tex code"

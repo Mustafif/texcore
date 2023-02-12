@@ -426,10 +426,9 @@ impl ElementList<Any> {
         result.join("\n")
     }
     /// Walks the list and returns a split latex string separating Packages level
-    pub fn to_latex_split_string(&mut self, structure: &PathBuf) -> (String, String) {
+    pub fn to_latex_split_string(&mut self, input: Input) -> (String, String) {
         let mut meta = Vec::new();
         meta.push(self.metadata.to_latex_string());
-        let input = Input::new(structure.to_owned(), Some(Meta));
         meta.push(input.to_latex_string());
         let mut packages = Vec::new();
         let mut document = Vec::new();
@@ -457,8 +456,9 @@ impl ElementList<Any> {
         Ok(())
     }
     /// Writes `ElementList` into two latex files splitting the `main` content and `path` for packages
-    pub fn write_split(&mut self, main: PathBuf, structure: PathBuf) -> Result<(), Error> {
-        let (main_tex, str_tex) = self.to_latex_split_string(&structure);
+    /// Input is used to declare the appropriate `\input{}` for your package file
+    pub fn write_split(&mut self, main: PathBuf, structure: PathBuf, input: Input) -> Result<(), Error> {
+        let (main_tex, str_tex) = self.to_latex_split_string(input);
         write_file(main, main_tex.as_bytes())?;
         write_file(structure, str_tex.as_bytes())?;
         Ok(())
