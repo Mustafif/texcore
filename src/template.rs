@@ -58,8 +58,8 @@ impl Template {
 
     /// Writes then compiles the document
     #[cfg(feature = "compile")]
-    pub fn write_then_compile(&self, main_path: PathBuf, str_path: PathBuf, pdf_path: PathBuf) -> Result<()> {
-        self.write_tex_files(main_path.clone(), str_path)?;
+    pub fn write_then_compile(&self, main_path: PathBuf, str_path: PathBuf, input: Input, pdf_path: PathBuf) -> Result<()> {
+        self.write_tex_files(main_path.clone(), str_path, input)?;
         crate::compile(main_path, pdf_path)?;
         Ok(())
     }
