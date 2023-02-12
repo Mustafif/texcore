@@ -46,6 +46,10 @@ impl Template {
     pub fn push_element_array(&self, elements: Vec<Element<Any>>) {
         self.element_list.borrow_mut().push_array(elements);
     }
+    /// Change the metadata
+    pub fn change_metadata(&self, metadata: Metadata) {
+        self.element_list.borrow_mut().change_metadata(metadata)
+    }
     /// Write the tex files from the template
     pub fn write_tex_files(&self, main_path: PathBuf, str_path: PathBuf) -> Result<()> {
         self.element_list.borrow_mut().write_split(main_path, str_path)?;

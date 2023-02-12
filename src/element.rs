@@ -363,6 +363,17 @@ impl ElementList<Any> {
             list: LinkedList::new(),
         }
     }
+    /// Changes the metadata
+    pub fn change_metadata(&mut self, metadata: Metadata) {
+        self.metadata = metadata
+    }
+    /// Pushes a vector of Packages as String
+    pub fn push_packages(&mut self, packages: Vec<String>) {
+        for p in packages {
+            let package = Package::new(&p);
+            self.push(Element::from(package))
+        }
+    }
     /// Adds in `\newpage` text as next element in the list
     pub fn add_newpage(&mut self) {
         let text = Text::new(r"\newpage", Normal);
