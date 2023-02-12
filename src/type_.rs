@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use crate::{Element, Level, Tex};
 use serde::{Deserialize, Serialize};
 
@@ -133,15 +134,21 @@ impl Custom {
 /// Represents `\input{}` in latex
 #[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Input {
-    pub file_name: String,
+    pub file_name: PathBuf,
     pub level: Option<Level>,
 }
 
 impl Input {
-    pub fn new(file_name: &str, level: Option<Level>) -> Self {
+    pub fn new(file_name: PathBuf, level: Option<Level>) -> Self {
         Self {
-            file_name: file_name.to_string(),
+            file_name,
             level,
+        }
+    }
+    pub fn file_name_str(&self) -> String {
+        match self.file_name.to_str() {
+            None => String::new(),
+            Some(p) => p.to_string()
         }
     }
 }

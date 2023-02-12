@@ -18,7 +18,10 @@ pub trait Tex {
 impl Tex for Any {
     fn to_latex_string(&self) -> String {
         match self.type_ {
-            T_Input => Input::new(&self.value, self.level).to_latex_string(),
+            T_Input => {
+                let path = PathBuf::from(&self.value);
+                Input::new(path, self.level).to_latex_string()
+            }
             T_Package => Package::new(&self.value).to_latex_string(),
             T_Part => Part::new(&self.value).to_latex_string(),
             T_Chapter => Chapter::new(&self.value).to_latex_string(),
@@ -80,7 +83,11 @@ impl Tex for Custom {
 
 impl Tex for Input {
     fn to_latex_string(&self) -> String {
-        format!(r"\input{{{}}}", &self.file_name)
+        let path = self.file_name.to_str();
+        match path {
+            Some(p) => format!(r"\input{{{}}}", p),
+            None => String::new()
+        }
     }
 }
 
@@ -277,7 +284,7 @@ impl From<Package> for Element<Any> {
 impl From<Input> for Element<Any> {
     fn from(input: Input) -> Self {
         let any = Any {
-            value: input.file_name,
+            value: input.file_name_str(),
             type_: T_Input,
             level: input.level,
             header_level: None,
@@ -408,10 +415,10 @@ impl ElementList<Any> {
         result.join("\n")
     }
     /// Walks the list and returns a split latex string separating Packages level
-    pub fn to_latex_split_string(&mut self) -> (String, String) {
+    pub fn to_latex_split_string(&mut self, structure: &PathBuf) -> (String, String) {
         let mut meta = Vec::new();
         meta.push(self.metadata.to_latex_string());
-        let input = Input::new("structure.tex", Some(Level::Meta));
+        let input = Input::new(structure.to_owned(), Some(Level::Meta));
         meta.push(input.to_latex_string());
         let mut packages = Vec::new();
         let mut document = Vec::new();
@@ -438,9 +445,9 @@ impl ElementList<Any> {
         write_file(main, latex.as_bytes())?;
         Ok(())
     }
-    /// Writes `ElementList` into two latex files splitting the `main` content and `path/structure.tex` path for packages
+    /// Writes `ElementList` into two latex files splitting the `main` content and `path` for packages
     pub fn write_split(&mut self, main: PathBuf, structure: PathBuf) -> Result<(), Error> {
-        let (main_tex, str_tex) = self.to_latex_split_string();
+        let (main_tex, str_tex) = self.to_latex_split_string(&structure);
         write_file(main, main_tex.as_bytes())?;
         write_file(structure.join("structure.tex"), str_tex.as_bytes())?;
         Ok(())
