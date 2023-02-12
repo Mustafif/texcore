@@ -1,4 +1,4 @@
-use crate::{Any, Element, ElementList, Metadata, Tex};
+use crate::{Any, Element, ElementList, Input, Metadata, Tex};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, to_string_pretty};
 use std::cell::RefCell;
@@ -51,8 +51,8 @@ impl Template {
         self.element_list.borrow_mut().change_metadata(metadata)
     }
     /// Write the tex files from the template
-    pub fn write_tex_files(&self, main_path: PathBuf, str_path: PathBuf) -> Result<()> {
-        self.element_list.borrow_mut().write_split(main_path, str_path)?;
+    pub fn write_tex_files(&self, main_path: PathBuf, str_path: PathBuf, input: Input) -> Result<()> {
+        self.element_list.borrow_mut().write_split(main_path, str_path, input)?;
         Ok(())
     }
 
