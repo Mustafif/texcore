@@ -38,6 +38,10 @@ impl Template {
     pub fn to_json_string(&self) -> String {
         to_string_pretty(&self).unwrap()
     }
+    /// Returns a split string for a main file and input file
+    pub fn to_latex_split_string(&self, input: Input) -> (String, String) {
+        self.element_list.borrow_mut().to_latex_split_string(input)
+    }
     /// Pushes an element to the template
     pub fn push_element(&self, element: Element<Any>) {
         self.element_list.borrow_mut().push(element);
