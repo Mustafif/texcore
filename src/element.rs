@@ -44,7 +44,8 @@ impl Tex for Any {
                 }
                 env.to_latex_string()
             }
-            T_Custom => self.value.clone(),
+            T_Custom => self.value.to_string(),
+            T_Commnent => self.value.to_string(),
             T_List => match self.list_type {
                 None => {
                     if let Some(items) = &self.items {
@@ -77,7 +78,13 @@ impl Tex for Environment {
 
 impl Tex for Custom {
     fn to_latex_string(&self) -> String {
-        self.value.clone()
+        self.value.to_string()
+    }
+}
+
+impl Tex for Comment {
+    fn to_latex_string(&self) -> String {
+        format!("% {}", &self.value)
     }
 }
 
@@ -174,8 +181,8 @@ impl Tex for List {
 impl Tex for Metadata {
     fn to_latex_string(&self) -> String {
         let doc_class = format!(
-            r"\documentclass[{}pt, letterpaper]{{{}}}",
-            &self.fontsize, &self.doc_class
+            r"\documentclass[{}pt, {}]{{{}}}",
+            &self.fontsize, &self.papersize, &self.doc_class
         );
         let title = format!(r"\title{{{}}}", &self.title);
         let author = format!(r"\author{{{}}}", &self.author);
@@ -326,6 +333,22 @@ impl From<Custom> for Element<Any> {
             elements: None,
         };
         Element::new(any, T_Custom, custom.level)
+    }
+}
+
+impl From<Comment> for Element<Any> {
+    fn from(value: Comment) -> Self {
+        let any = Any {
+            value: value.value,
+            type_: T_Custom,
+            level: Some(value.level),
+            header_level: None,
+            text_type: None,
+            list_type: None,
+            items: None,
+            elements: None,
+        };
+        Element::new(any, T_Commnent, value.level)
     }
 }
 

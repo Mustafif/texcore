@@ -17,6 +17,7 @@ pub enum Type {
     T_List,
     T_Item,
     T_Custom,
+    T_Commnent,
 }
 
 /// Represents the metadata
@@ -26,6 +27,7 @@ pub struct Metadata {
     pub date: String,
     pub title: String,
     pub fontsize: u8,
+    pub papersize: String,
     pub doc_class: String,
     pub maketitle: bool,
 }
@@ -36,6 +38,7 @@ impl Metadata {
         date: &str,
         title: &str,
         fontsize: u8,
+        papersize: &str,
         doc_class: &str,
         maketitle: bool,
     ) -> Self {
@@ -44,6 +47,7 @@ impl Metadata {
             date: date.to_string(),
             title: title.to_string(),
             fontsize,
+            papersize: papersize.to_string(),
             doc_class: doc_class.to_string(),
             maketitle,
         }
@@ -52,7 +56,7 @@ impl Metadata {
 
 impl Default for Metadata {
     fn default() -> Self {
-        Self::new("author", "date", "title", 11, "article", true)
+        Self::new("author", "date", "title", 11, "letterpaper", "article", true)
     }
 }
 
@@ -128,6 +132,19 @@ impl Custom {
             value: value.to_string(),
             level,
         }
+    }
+}
+
+/// Represents a comment in LaTeX `% foo bar...`
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
+pub struct Comment {
+    pub value: String,
+    pub level: Level,
+}
+
+impl Comment {
+    pub fn new(value: &str, level: Level) -> Self {
+        Self { value: value.to_string(), level }
     }
 }
 
