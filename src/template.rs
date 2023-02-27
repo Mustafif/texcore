@@ -80,8 +80,8 @@ impl Template {
     }
     /// Asynchronously returns a string for the main file
     #[cfg(feature = "async")]
-    pub async fn async_latex_string(&self, input: Input) -> String {
-        self.element_list.borrow().async_latex_string()
+    pub async fn async_latex_string(&self) -> String {
+        self.element_list.borrow().async_latex_string().await
     }
 }
 
