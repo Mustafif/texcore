@@ -357,7 +357,7 @@ impl From<Comment> for Element<Any> {
 pub struct Element<T: Tex> {
     pub(crate) value: T,
     type_: Type,
-    level: Level,
+    pub(crate) level: Level,
 }
 
 impl<T: Tex> Element<T> {
@@ -427,9 +427,9 @@ impl ElementList<Any> {
     /// Walks the list and returns a combined latex string
     pub fn to_latex_string(&mut self) -> String {
         let mut meta = Vec::new();
-        meta.push(self.metadata.to_latex_string());
         let mut packages = Vec::new();
         let mut document = Vec::new();
+        meta.push(self.metadata.to_latex_string());
         document.push(r"\begin{document}".to_owned());
         if self.metadata.maketitle {
             document.push(r"\maketitle".to_owned());

@@ -14,6 +14,9 @@ pub mod level;
 pub mod template;
 /// Type controls the different kinds of latex elements
 pub mod type_;
+#[cfg(feature = "async")]
+/// Provides asynchronous methods using the type `TexAsync`
+pub mod future;
 
 pub use element::*;
 pub use level::*;

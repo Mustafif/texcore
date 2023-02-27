@@ -2,14 +2,14 @@
 
 > This project is under the [MIT License](LICENSE)
 
-TexCore is the successor to `tex-rs` and uses linked lists to help walk and sort elements to either
-write to tex code or compile to pdf.
+TexCore is a library that allows a developer to write `LaTeX` using native `Rust` types. We also provide functions
+to compile the code using a Rust built LaTeX compiler, `tectonic`.
 
 To add to your project:
 
 ```toml
 [dependencies]
-texcore = "0.4"
+texcore = "0.5"
 ```
 
 ### The Compile Feature
@@ -20,7 +20,7 @@ are hidden under this feature.
 
 ```toml
 [dependencies]
-texcore = { version = "0.4", features = ["compile"] }
+texcore = { version = "0.5", features = ["compile"] }
 ```
 
 ### The TexCreate Template Feature
@@ -29,29 +29,38 @@ To allow easier development with the TexCreate project, I have decided to add th
 the `texcreate_template` feature.
 
 ```toml
-texcore = { version = "0.4", features = ["texcreate_template"] }
+texcore = { version = "0.5", features = ["texcreate_template"] }
+```
+
+### The Async Feature
+
+This feature provides asynchronous options using the type, `TexAsync` which isn't a trait but a generic struct that
+requires `T` to implement `Tex`. The reason of not using a trait is that asynchronous methods in a trait isn't stable
+yet.
+Most importantly we get the following functions from the `future` module:
+
+- `async_latex_string<T: Tex>(t: &T) -> impl Future<Output=String> + Send`
+- `Element<Any>::async_latex_string()`
+- `ElementList::async_latex_string()`
+- `ElementList::async_latex_split_string()`
+- `ElementList::async_write()`
+- `ElementList::async_split_write()`
+
+Advantages of using the asynchronous writing operations is because they are done so concurrently, and in terms of
+`async_split_write()`, the task of writing to each file is done in parallel.
+
+```toml
+texcore = { version = "0.5", features = ["async"] }
 ```
 
 ### The Full Feature
 
-To enable both the `compile` and `texcreate_template` feature, you may use the `full` feature.
+To enable all features seen above , you may use the `full` feature.
 
 ```toml
-texcore = { version = "0.4", features = ["full"] }
+texcore = { version = "0.5", features = ["full"] }
 ```
 
 Read documentation [here](https://docs.rs/crate/texcore/latest)
 
-## Changes in 0.4
-
-- `ElementList::new()` has been changed so it needs `&Metadata` as an argument
-- Fixed the `From` trait that is implement for all of the `Tex` types for `Element<Any>`
-
-The following functions uses `ElementList` mutably, as well as other described changes:
-
-- `ElementList::to_latex_string()` & `ElementList::to_latex_split_string()` have been modified.
-    - No longer use a `sort()` method and instead utilizes `fpop()`.
-- The `ElementList::write()` function has been split into two different functions:
-    - `ElementList::write()`: Writes to a file given a path, `main`
-    - `ElementList::write_split()`: Write to two files by splitting the meta + document and packages level
 
