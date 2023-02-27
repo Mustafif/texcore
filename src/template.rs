@@ -67,6 +67,22 @@ impl Template {
         crate::compile(main_path, pdf_path)?;
         Ok(())
     }
+    /// Asynchronously writes the tex files from the template
+    #[cfg(feature = "async")]
+    pub async fn async_write(&self, main_path: PathBuf, str_path: PathBuf, input: Input) -> Result<()> {
+        self.element_list.borrow().async_write_split(main_path, str_path, input).await?;
+        Ok(())
+    }
+    /// Asynchronously returns a split string for a main file and input file
+    #[cfg(feature = "async")]
+    pub async fn async_latex_split_string(&self, input: Input) -> (String, String) {
+        self.element_list.borrow().async_latex_split_string(input).await
+    }
+    /// Asynchronously returns a string for the main file
+    #[cfg(feature = "async")]
+    pub async fn async_latex_string(&self, input: Input) -> String {
+        self.element_list.borrow().async_latex_string()
+    }
 }
 
 impl Tex for Template {
