@@ -45,22 +45,16 @@ impl Template {
         self.element_list.async_latex_split_string(input).await
     }
     /// Pushes an element to the template
-    pub async fn push_element(&self, element: Element<Any>) {
-        let lock = RwLock::new(&self.element_list);
-        let mut list = lock.write().await;
-        list.push(element)
+    pub fn push_element(&mut self, element: Element<Any>) {
+        self.element_list.push(element)
     }
     /// Pushes an array of elements to the template
-    pub async fn push_element_array(&self, elements: Vec<Element<Any>>) {
-        let lock = RwLock::new(&self.element_list);
-        let mut list = lock.write().await;
-        list.push_array(elements)
+    pub async fn push_element_array(&mut self, elements: Vec<Element<Any>>) {
+        self.element_list.push_array(elements)
     }
     /// Change the metadata
-    pub async fn change_metadata(&self, metadata: Metadata) {
-        let lock = RwLock::new(&self.element_list);
-        let mut list = lock.write().await;
-        list.change_metadata(metadata)
+    pub fn change_metadata(&self, metadata: Metadata) {
+        self.element_list.change_metadata(metadata)
     }
     /// Write the tex files from the template
     pub async fn write_tex_files(&self, main_path: PathBuf, str_path: PathBuf, input: Input) -> Result<()> {
