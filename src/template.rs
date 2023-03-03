@@ -1,18 +1,20 @@
 use crate::{Any, Element, ElementList, Input, Metadata, Tex};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, to_string_pretty};
-use std::cell::RefCell;
 use std::fs::read_to_string;
+use std::future::Future;
 use std::io::Result;
 use std::path::PathBuf;
+use tokio::sync::RwLock;
+
 
 /// A TexCreate-template that will be used to store and create TexCreate projects
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, PartialOrd)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Template {
     pub name: String,
     pub description: String,
     pub version: Version,
-    element_list: RefCell<ElementList<Any>>,
+    element_list: ElementList<Any>,
 }
 
 impl Template {
@@ -22,7 +24,7 @@ impl Template {
             name: name.to_string(),
             description: description.to_string(),
             version: Version::new(),
-            element_list: RefCell::new(ElementList::new(metadata)),
+            element_list: ElementList::new(metadata),
         }
     }
     /// Creates a new Template by deserializing a file using the path
@@ -39,55 +41,39 @@ impl Template {
         to_string_pretty(&self).unwrap()
     }
     /// Returns a split string for a main file and input file
-    pub fn to_latex_split_string(&self, input: Input) -> (String, String) {
-        self.element_list.borrow_mut().to_latex_split_string(input)
+    pub async fn to_latex_split_string(&self, input: Input) -> (String, String) {
+        self.element_list.async_latex_split_string(input).await
     }
     /// Pushes an element to the template
-    pub fn push_element(&self, element: Element<Any>) {
-        self.element_list.borrow_mut().push(element);
+    pub async fn push_element(&self, element: Element<Any>) {
+        let lock = RwLock::new(&self.element_list);
+        let mut list = lock.write().await;
+        list.push(element)
     }
     /// Pushes an array of elements to the template
-    pub fn push_element_array(&self, elements: Vec<Element<Any>>) {
-        self.element_list.borrow_mut().push_array(elements);
+    pub async fn push_element_array(&self, elements: Vec<Element<Any>>) {
+        let lock = RwLock::new(&self.element_list);
+        let mut list = lock.write().await;
+        list.push_array(elements)
     }
     /// Change the metadata
-    pub fn change_metadata(&self, metadata: Metadata) {
-        self.element_list.borrow_mut().change_metadata(metadata)
+    pub async fn change_metadata(&self, metadata: Metadata) {
+        let lock = RwLock::new(&self.element_list);
+        let mut list = lock.write().await;
+        list.change_metadata(metadata)
     }
     /// Write the tex files from the template
-    pub fn write_tex_files(&self, main_path: PathBuf, str_path: PathBuf, input: Input) -> Result<()> {
-        self.element_list.borrow_mut().write_split(main_path, str_path, input)?;
+    pub async fn write_tex_files(&self, main_path: PathBuf, str_path: PathBuf, input: Input) -> Result<()> {
+        self.element_list.async_write_split(main_path, str_path, input).await?;
         Ok(())
-    }
-
-    /// Writes then compiles the document
-    #[cfg(feature = "compile")]
-    pub fn write_then_compile(&self, main_path: PathBuf, str_path: PathBuf, input: Input, pdf_path: PathBuf) -> Result<()> {
-        self.write_tex_files(main_path.clone(), str_path, input)?;
-        crate::compile(main_path, pdf_path)?;
-        Ok(())
-    }
-    /// Asynchronously writes the tex files from the template
-    #[cfg(feature = "async")]
-    pub async fn async_write(&self, main_path: PathBuf, str_path: PathBuf, input: Input) -> Result<()> {
-        self.element_list.borrow().async_write_split(main_path, str_path, input).await?;
-        Ok(())
-    }
-    /// Asynchronously returns a split string for a main file and input file
-    #[cfg(feature = "async")]
-    pub async fn async_latex_split_string(&self, input: Input) -> (String, String) {
-        self.element_list.borrow().async_latex_split_string(input).await
-    }
-    /// Asynchronously returns a string for the main file
-    #[cfg(feature = "async")]
-    pub async fn async_latex_string(&self) -> String {
-        self.element_list.borrow().async_latex_string().await
     }
 }
 
 impl Tex for Template {
     fn to_latex_string(&self) -> String {
-        self.element_list.borrow_mut().to_latex_string()
+        let lock = RwLock::new(&self.element_list);
+        let mut list = lock.blocking_write();
+        list.to_latex_string()
     }
 }
 

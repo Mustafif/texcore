@@ -22,7 +22,7 @@ tokio = { version = "1", features = ["full"], optional = true }
 default = []
 #! Allows compiling latex code to a pdf using the `tectonic` crate
 compile = ["dep:tectonic"]
-texcreate_template = ["dep:serde_json"]
+texcreate_template = ["dep:serde_json", "async"]
 async = ["dep:futures", "dep:tokio"]
 full = ["compile", "texcreate_template", "async"]
 
