@@ -53,7 +53,7 @@ impl Template {
         self.element_list.push_array(elements)
     }
     /// Change the metadata
-    pub fn change_metadata(&self, metadata: Metadata) {
+    pub fn change_metadata(&mut self, metadata: Metadata) {
         self.element_list.change_metadata(metadata)
     }
     /// Write the tex files from the template
