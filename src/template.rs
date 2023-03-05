@@ -65,9 +65,9 @@ impl Template {
 
 impl Tex for Template {
     fn to_latex_string(&self) -> String {
-        let lock = RwLock::new(&self.element_list);
-        let mut list = lock.blocking_write();
-        list.to_latex_string()
+        let mut list = self.element_list.clone();
+        let s = list.to_latex_string();
+        s
     }
 }
 
