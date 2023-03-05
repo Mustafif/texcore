@@ -92,7 +92,7 @@ impl Tex for Input {
     fn to_latex_string(&self) -> String {
         let path = self.file_name.to_str();
         match path {
-            Some(p) => format!(r"\input{{{}}}", p),
+            Some(p) => format!(r"\input{{{p}}}"),
             None => String::new()
         }
     }
@@ -118,19 +118,18 @@ impl Tex for Chapter {
 
 impl Tex for Header {
     fn to_latex_string(&self) -> String {
-        if self.header_level == 1 as u8 {
-            format!(r"\section{{{}}}", &self.name)
-        } else if self.header_level > 1 as u8 {
-            let mut result = r"\".to_string();
-            let mut count = 0;
-            while count < self.header_level {
-                result.push_str("sub");
-                count += 1;
+        match self.header_level {
+            1 => format!(r"\section{{{}}}", &self.name),
+            _ => {
+                let mut result = r"\".to_string();
+                let mut count = 0;
+                while count < self.header_level {
+                    result.push_str("sub");
+                    count += 1;
+                }
+                result.push_str(&format!("section{{{}}}", &self.name));
+                result
             }
-            result.push_str(&format!("section{{{}}}", &self.name));
-            result
-        } else {
-            "header number error".to_string()
         }
     }
 }
@@ -143,13 +142,13 @@ impl Tex for Paragraph {
 
 impl Tex for Text {
     fn to_latex_string(&self) -> String {
-        return match &self.type_ {
+        match &self.type_ {
             Bold => format!(r"\textbf{{{}}}", &self.content),
             Italics => format!(r"\textit{{{}}}", &self.content),
-            Normal => format!(r"{}", &self.content),
+            Normal => self.content.to_string(),
             Math => format!("${}$", &self.content),
             Par => format!(r"\par {{{}}}", &self.content),
-        };
+        }
     }
 }
 
@@ -165,8 +164,8 @@ impl Tex for List {
             ListType::Itemized => "itemize",
             ListType::Enumerated => "enumerate",
         };
-        let begin = format!(r"\begin{{{}}}", list);
-        let end = format!(r"\end{{{}}}", list);
+        let begin = format!(r"\begin{{{list}}}");
+        let end = format!(r"\end{{{list}}}");
 
         let mut result = Vec::new();
         result.push(begin);
@@ -425,7 +424,7 @@ impl ElementList<Any> {
         self.list.pop_front()
     }
     /// Walks the list and returns a combined latex string
-    pub fn to_latex_string(&mut self) -> String {
+    pub fn to_latex_string(&self) -> String {
         let mut meta = Vec::new();
         let mut packages = Vec::new();
         let mut document = Vec::new();
@@ -434,7 +433,7 @@ impl ElementList<Any> {
         if self.metadata.maketitle {
             document.push(r"\maketitle".to_owned());
         }
-        while let Some(i) = self.fpop() {
+        while let Some(i) = self.list.front() {
             match i.level {
                 Document => document.push(i.value.to_latex_string()),
                 Packages => packages.push(i.value.to_latex_string()),
@@ -442,14 +441,11 @@ impl ElementList<Any> {
             }
         }
         document.push(r"\end{document}".to_owned());
-        let mut result = Vec::new();
-        result.push(meta.join("\n"));
-        result.push(packages.join("\n"));
-        result.push(document.join("\n"));
+        let result = vec![meta.join("\n"), packages.join("\n"), document.join("\n")];
         result.join("\n")
     }
     /// Walks the list and returns a split latex string separating Packages level
-    pub fn to_latex_split_string(&mut self, input: Input) -> (String, String) {
+    pub fn to_latex_split_string(&self, input: Input) -> (String, String) {
         let mut meta = Vec::new();
         meta.push(self.metadata.to_latex_string());
         meta.push(input.to_latex_string());
@@ -459,7 +455,7 @@ impl ElementList<Any> {
         if self.metadata.maketitle {
             document.push(r"\maketitle".to_owned());
         }
-        while let Some(i) = self.fpop() {
+        while let Some(i) = self.list.front() {
             match i.level {
                 Document => document.push(i.value.to_latex_string()),
                 Packages => packages.push(i.value.to_latex_string()),
@@ -467,9 +463,7 @@ impl ElementList<Any> {
             }
         }
         document.push(r"\end{document}".to_owned());
-        let mut result = Vec::new();
-        result.push(meta.join("\n"));
-        result.push(document.join("\n"));
+        let result = vec![meta.join("\n"), document.join("\n")];
         (result.join("\n"), packages.join("\n"))
     }
     /// Writes `ElementList` into a latex file

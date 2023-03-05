@@ -18,6 +18,7 @@ serde_json = { version = "1", optional = true }
 serde = { version = "1", features = ["derive"] }
 futures = { version = "0.3.26", optional = true }
 tokio = { version = "1", features = ["full"], optional = true }
+rayon = "1.7.0"
 [features]
 default = []
 #! Allows compiling latex code to a pdf using the `tectonic` crate
