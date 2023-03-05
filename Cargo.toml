@@ -18,16 +18,17 @@ serde_json = { version = "1", optional = true }
 serde = { version = "1", features = ["derive"] }
 futures = { version = "0.3.26", optional = true }
 tokio = { version = "1", features = ["full"], optional = true }
-rayon = "1.7.0"
+rayon = { version = "1.7.0", optional = true }
 [features]
 default = []
 #! Allows compiling latex code to a pdf using the `tectonic` crate
 compile = ["dep:tectonic"]
 texcreate_template = ["dep:serde_json", "async"]
 async = ["dep:futures", "dep:tokio"]
-full = ["compile", "texcreate_template", "async"]
+parallel = ["dep:rayon"]
+full = ["compile", "texcreate_template", "async", "parallel"]
 
 
 [package.metadata.docs.rs]
 all-features = true
-features = ["compile", "texcreate_template", "async"]
+features = ["full"]

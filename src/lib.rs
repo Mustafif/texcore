@@ -1,22 +1,29 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
 //! # Examples
 //! ```rust
 #![doc = include_str ! ("../examples/doc_example.rs")]
 //! ```
 /// Element controls everything related to `Elements` and `ElementList`
 pub mod element;
+#[cfg(feature = "async")]
+/// Provides asynchronous methods using the type `TexAsync`
+pub mod future;
 /// Level controls where each element goes
 /// - Meta (Metadata like author, doc class, date)
 /// - Packages (Where all packages go)
 /// - Document (Inside the `\begin{document}` and `\end{document}`)
 pub mod level;
+#[doc(hidden)]
+/// Macro APIS that are used around the library to provide easier
+/// development with features separation.
+#[allow(unused_macros)]
+#[macro_use]
+pub(crate) mod macros;
 #[cfg(feature = "texcreate_template")]
 /// Provides the `Template` type for the TexCreate project
 pub mod template;
 /// Type controls the different kinds of latex elements
 pub mod type_;
-#[cfg(feature = "async")]
-/// Provides asynchronous methods using the type `TexAsync`
-pub mod future;
 
 pub use element::*;
 pub use level::*;
@@ -52,4 +59,3 @@ macro_rules! Elements {
         }
     };
 }
-

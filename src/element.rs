@@ -2,14 +2,22 @@ use crate::Level::*;
 use crate::TextType::*;
 use crate::Type::*;
 use crate::*;
+
+use crate::feature;
 use serde::{Deserialize, Serialize};
 use std::collections::LinkedList;
 use std::fs::File;
 use std::io::{Error, Write};
 use std::path::PathBuf;
-#[cfg(feature = "compile")]
-use tectonic::latex_to_pdf;
-
+feature! {
+    #![feature = "compile"]
+    use tectonic::latex_to_pdf;
+}
+feature! {
+    #![feature = "parallel"]
+    use rayon::prelude::*;
+    use rayon::*;
+}
 /// Converts a struct to a string
 pub trait Tex {
     fn to_latex_string(&self) -> String;
@@ -93,7 +101,7 @@ impl Tex for Input {
         let path = self.file_name.to_str();
         match path {
             Some(p) => format!(r"\input{{{p}}}"),
-            None => String::new()
+            None => String::new(),
         }
     }
 }
@@ -378,6 +386,11 @@ pub struct ElementList<T: Tex> {
 }
 
 impl ElementList<Any> {
+    #[cfg(feature = "parallel")]
+    pub fn par_iter(&self) -> impl ParallelIterator<Item=&Element<Any>> {
+        use rayon::prelude::*;
+        self.list.par_iter()
+    }
     /// Creates a new empty list
     pub fn new(metadata: &Metadata) -> Self {
         Self {
@@ -433,7 +446,7 @@ impl ElementList<Any> {
         if self.metadata.maketitle {
             document.push(r"\maketitle".to_owned());
         }
-        while let Some(i) = self.list.front() {
+        for i in self.list.iter() {
             match i.level {
                 Document => document.push(i.value.to_latex_string()),
                 Packages => packages.push(i.value.to_latex_string()),
@@ -455,7 +468,7 @@ impl ElementList<Any> {
         if self.metadata.maketitle {
             document.push(r"\maketitle".to_owned());
         }
-        while let Some(i) = self.list.front() {
+        for i in self.list.iter() {
             match i.level {
                 Document => document.push(i.value.to_latex_string()),
                 Packages => packages.push(i.value.to_latex_string()),
@@ -467,22 +480,45 @@ impl ElementList<Any> {
         (result.join("\n"), packages.join("\n"))
     }
     /// Writes `ElementList` into a latex file
-    pub fn write(&mut self, main: PathBuf) -> Result<(), Error> {
+    pub fn write(&self, main: PathBuf) -> Result<(), Error> {
         let latex = self.to_latex_string();
         write_file(main, latex.as_bytes())?;
         Ok(())
     }
     /// Writes `ElementList` into two latex files splitting the `main` content and `path` for packages
     /// Input is used to declare the appropriate `\input{}` for your package file
-    pub fn write_split(&mut self, main: PathBuf, structure: PathBuf, input: Input) -> Result<(), Error> {
+    pub fn write_split(
+        &self,
+        main: PathBuf,
+        structure: PathBuf,
+        input: Input,
+    ) -> Result<(), Error> {
         let (main_tex, str_tex) = self.to_latex_split_string(input);
         write_file(main, main_tex.as_bytes())?;
         write_file(structure, str_tex.as_bytes())?;
         Ok(())
     }
+    feature! {
+        #![feature = "parallel"]
+        /// A parallel alternate to `write()`
+        pub fn par_write(&self, main: PathBuf){
+            let pool = ThreadPoolBuilder::default().build().expect("Couldn't build pool");
+            let latex = pool.install(|| self.to_latex_string());
+            pool.install(|| write_file(main, latex.as_bytes()).expect("Couldn't write latex file in pool"));
+        }
+        pub fn par_write_split(&self, main: PathBuf, structure: PathBuf, input: Input){
+            let pool = ThreadPoolBuilder::default().build().expect("Couldn't build pool");
+            let (main_tex, str_tex) = pool.install(|| self.to_latex_split_string(input));
+            pool.join(
+                || write_file(main, main_tex.as_bytes()).expect("Couldn't write main file in pool"),
+                || write_file(structure, str_tex.as_bytes()).expect("Couldn't write structure file in pool")
+            );
+        }
+    }
+
     #[cfg(feature = "compile")]
     /// Compiles the list into a pdf file
-    pub fn compile(&mut self, path: PathBuf) -> Result<(), Error> {
+    pub fn compile(&self, path: PathBuf) -> Result<(), Error> {
         let mut file = File::create(path)?;
         let latex = self.to_latex_string();
         let pdf = latex_to_pdf(&latex)?;

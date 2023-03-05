@@ -1,6 +1,6 @@
-use std::path::PathBuf;
 use crate::{Element, Level, Tex};
 use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 
 #[allow(non_camel_case_types)]
 /// Represents the types of latex elements
@@ -56,7 +56,15 @@ impl Metadata {
 
 impl Default for Metadata {
     fn default() -> Self {
-        Self::new("author", "date", "title", 11, "letterpaper", "article", true)
+        Self::new(
+            "author",
+            "date",
+            "title",
+            11,
+            "letterpaper",
+            "article",
+            true,
+        )
     }
 }
 
@@ -144,7 +152,10 @@ pub struct Comment {
 
 impl Comment {
     pub fn new(value: &str, level: Level) -> Self {
-        Self { value: value.to_string(), level }
+        Self {
+            value: value.to_string(),
+            level,
+        }
     }
 }
 
@@ -157,15 +168,12 @@ pub struct Input {
 
 impl Input {
     pub fn new(file_name: PathBuf, level: Option<Level>) -> Self {
-        Self {
-            file_name,
-            level,
-        }
+        Self { file_name, level }
     }
     pub fn file_name_str(&self) -> String {
         match self.file_name.to_str() {
             None => String::new(),
-            Some(p) => p.to_string()
+            Some(p) => p.to_string(),
         }
     }
 }

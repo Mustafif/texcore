@@ -7,7 +7,6 @@ use std::io::Result;
 use std::path::PathBuf;
 use tokio::sync::RwLock;
 
-
 /// A TexCreate-template that will be used to store and create TexCreate projects
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Template {
@@ -57,17 +56,22 @@ impl Template {
         self.element_list.change_metadata(metadata)
     }
     /// Write the tex files from the template
-    pub async fn write_tex_files(&self, main_path: PathBuf, str_path: PathBuf, input: Input) -> Result<()> {
-        self.element_list.async_write_split(main_path, str_path, input).await?;
+    pub async fn write_tex_files(
+        &self,
+        main_path: PathBuf,
+        str_path: PathBuf,
+        input: Input,
+    ) -> Result<()> {
+        self.element_list
+            .async_write_split(main_path, str_path, input)
+            .await?;
         Ok(())
     }
 }
 
 impl Tex for Template {
     fn to_latex_string(&self) -> String {
-        let mut list = self.element_list.clone();
-        let s = list.to_latex_string();
-        s
+        self.to_latex_string()
     }
 }
 
