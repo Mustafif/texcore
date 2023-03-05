@@ -2,10 +2,10 @@ use crate::{Any, Element, ElementList, Input, Metadata, Tex};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, to_string_pretty};
 use std::fs::read_to_string;
-use std::future::Future;
+
 use std::io::Result;
 use std::path::PathBuf;
-use tokio::sync::RwLock;
+
 
 /// A TexCreate-template that will be used to store and create TexCreate projects
 #[derive(Debug, Deserialize, Serialize)]
@@ -71,7 +71,7 @@ impl Template {
 
 impl Tex for Template {
     fn to_latex_string(&self) -> String {
-        self.to_latex_string()
+        self.element_list.to_latex_string()
     }
 }
 
