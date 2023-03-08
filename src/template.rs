@@ -1,11 +1,11 @@
 use crate::{Any, Element, ElementList, Input, Metadata, Tex};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, to_string_pretty};
+use std::fmt::{Display, Formatter};
 use std::fs::read_to_string;
 
 use std::io::Result;
 use std::path::PathBuf;
-
 
 /// A TexCreate-template that will be used to store and create TexCreate projects
 #[derive(Debug, Deserialize, Serialize)]
@@ -22,7 +22,7 @@ impl Template {
         Self {
             name: name.to_string(),
             description: description.to_string(),
-            version: Version::new(),
+            version: Version::default(),
             element_list: ElementList::new(metadata),
         }
     }
@@ -33,7 +33,7 @@ impl Template {
     }
     /// Creates a new Template by deserializing a string
     pub fn from_string(content: &str) -> Self {
-        from_str(&content).unwrap()
+        from_str(content).unwrap()
     }
     /// Serializes a Template into a JSON string
     pub fn to_json_string(&self) -> String {
@@ -84,12 +84,12 @@ pub struct Version {
 }
 
 impl Version {
-    /// Creates Template with default `v1.0.0`
-    pub fn new() -> Self {
+    /// Creates a new version using a major, minor and patch values
+    pub fn new(major: u8, minor: u8, patch: u8) -> Self {
         Self {
-            major: 1,
-            minor: 0,
-            patch: 0,
+            major,
+            minor,
+            patch,
         }
     }
     /// Increases major version by 1
@@ -110,8 +110,22 @@ impl Version {
         self.minor = minor;
         self.patch = patch;
     }
-    /// Returns the version as a string: `v.major.minor.patch`
-    pub fn to_string(&self) -> String {
-        format!("v{}.{}.{}", self.major, self.minor, self.patch)
+}
+
+/// Creates Template with default `v1.0.0`
+impl Default for Version {
+    fn default() -> Self {
+        Self {
+            major: 1,
+            minor: 0,
+            patch: 0,
+        }
+    }
+}
+
+impl Display for Version {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let s = format!("v{}.{}.{}", self.major, self.minor, self.patch);
+        f.write_str(&s)
     }
 }

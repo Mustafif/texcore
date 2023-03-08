@@ -1,6 +1,6 @@
 [package]
 name = "texcore"
-version = "0.5.4"
+version = "0.6.0"
 edition = "2021"
 authors = ["Mustafif Khan"]
 description = "Write latex in rust, and either compile it to pdf or output the tex code"
@@ -26,6 +26,7 @@ compile = ["dep:tectonic"]
 texcreate_template = ["dep:serde_json", "async"]
 async = ["dep:futures", "dep:tokio"]
 parallel = ["dep:rayon"]
+async_unstable = ["async"]
 full = ["compile", "texcreate_template", "async", "parallel"]
 
 

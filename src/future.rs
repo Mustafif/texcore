@@ -1,13 +1,18 @@
+#![feature(async_iterator)]
+
+use std::path::PathBuf;
+
+use futures::Future;
+use futures::future::ready;
+use tokio::{join, spawn};
+use tokio::fs::File;
+use tokio::io::{AsyncWriteExt, Result};
+
+use crate::{feature, not_feature, async_unstable};
+use crate::{Any, Input, Tex};
 use crate::Element;
 use crate::ElementList;
 use crate::Level::*;
-use crate::{Any, Input, Tex};
-use futures::future::ready;
-use futures::Future;
-use std::path::PathBuf;
-use tokio::fs::File;
-use tokio::io::{AsyncWriteExt, Result};
-use tokio::{join, spawn};
 
 /// A type to provide asynchronous support to TeX elements
 ///
@@ -20,7 +25,7 @@ impl<'a, T: Tex> TexAsync<'a, T> {
         Self(t)
     }
     /// Takes ownership and returns a future of the LaTeX String
-    fn async_latex_string(self) -> impl Future<Output = String> + Send {
+    fn async_latex_string(self) -> impl Future<Output=String> + Send {
         // get the latex string from the value `T`
         let s = self.0.to_latex_string();
         // turn the string into a `Future` that is immediately ready
@@ -33,7 +38,7 @@ impl<'a, T: Tex> TexAsync<'a, T> {
 }
 
 /// An asynchronous version of `Tex::to_latex_string()`
-pub fn async_latex_string<T: Tex>(t: &T) -> impl Future<Output = String> + Send {
+pub fn async_latex_string<T: Tex>(t: &T) -> impl Future<Output=String> + Send {
     let ta = TexAsync::new(t);
     ta.async_latex_string()
 }
@@ -45,42 +50,38 @@ impl Element<Any> {
     }
 }
 
+use std::async_iter::AsyncIterator;
+
+
 // asynchronous methods for ElementList<Any>
 impl ElementList<Any> {
     pub async fn async_latex_string(&self) -> String {
         let mut meta = Vec::new();
         let mut packages = Vec::new();
         let mut document = Vec::new();
-        let mut list = self.clone();
+        let list = self.clone();
         spawn(async move {
             meta.push(async_latex_string(&list.metadata()).await);
             document.push(r"\begin{document}".to_owned());
             if list.metadata().maketitle {
                 document.push(r"\maketitle".to_owned());
             }
-            while let Some(i) = list.fpop() {
-                match i.level {
-                    Document => document.push(i.async_latex_string().await),
-                    Packages => packages.push(i.async_latex_string().await),
-                    Meta => meta.push(i.async_latex_string().await),
-                }
+            for i in list.iter() {
+                iter_push(i, &mut document, &mut packages, &mut meta).await
             }
 
             document.push(r"\end{document}".to_owned());
-            let mut result = Vec::new();
-            result.push(meta.join("\n"));
-            result.push(packages.join("\n"));
-            result.push(document.join("\n"));
+            let result = vec![meta.join("\n"), packages.join("\n"), document.join("\n")];
             result.join("\n")
         })
-        .await
-        .unwrap()
+            .await
+            .unwrap()
     }
     pub async fn async_latex_split_string(&self, input: Input) -> (String, String) {
         let mut meta = Vec::new();
         let mut packages = Vec::new();
         let mut document = Vec::new();
-        let mut list = self.clone();
+        let list = self.clone();
         spawn(async move {
             meta.push(async_latex_string(&list.metadata()).await);
             meta.push(async_latex_string(&input).await);
@@ -88,22 +89,16 @@ impl ElementList<Any> {
             if list.metadata().maketitle {
                 document.push(r"\maketitle".to_owned());
             }
-            while let Some(i) = list.fpop() {
-                match i.level {
-                    Document => document.push(i.async_latex_string().await),
-                    Packages => packages.push(i.async_latex_string().await),
-                    Meta => meta.push(i.async_latex_string().await),
-                }
+            for i in list.iter() {
+                iter_push(i, &mut document, &mut packages, &mut meta).await
             }
 
             document.push(r"\end{document}".to_owned());
-            let mut result = Vec::new();
-            result.push(meta.join("\n"));
-            result.push(document.join("\n"));
+            let result = vec![meta.join("\n"), document.join("\n")];
             (result.join("\n"), packages.join("\n"))
         })
-        .await
-        .unwrap()
+            .await
+            .unwrap()
     }
     /// Asynchronously version of `write()`
     ///
@@ -115,8 +110,8 @@ impl ElementList<Any> {
                 .await
                 .expect("Couldn't write to file");
         })
-        .await
-        .unwrap();
+            .await
+            .unwrap();
         Ok(())
     }
     /// Asynchronous version of `write_split()`
@@ -132,11 +127,10 @@ impl ElementList<Any> {
         let task_m = spawn(async move { write_file(main, main_data.as_bytes()).await });
 
         let task_s = spawn(async move { write_file(structure, str_data.as_bytes()).await });
-        match join!(task_m, task_s) {
-            (r1, r2) => {
-                r1??;
-                r2??;
-            }
+        let (r1, r2) = join!(task_m, task_s);
+        {
+            r1??;
+            r2??;
         }
         Ok(())
     }
@@ -146,4 +140,17 @@ async fn write_file(path: PathBuf, bytes: &[u8]) -> Result<()> {
     let mut file = File::create(path).await?;
     file.write_all(bytes).await?;
     Ok(())
+}
+
+async fn iter_push(
+    i: &Element<Any>,
+    document: &mut Vec<String>,
+    packages: &mut Vec<String>,
+    meta: &mut Vec<String>,
+) {
+    match i.level {
+        Document => document.push(i.async_latex_string().await),
+        Packages => packages.push(i.async_latex_string().await),
+        Meta => meta.push(i.async_latex_string().await),
+    }
 }

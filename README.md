@@ -1,6 +1,12 @@
-# TexCore
+# __TexCore__
 
-> This project is under the [MIT License](LICENSE)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/MKProj/texcore/rust.yml)
+![Lines of code](https://img.shields.io/tokei/lines/github/MKProj/texcore)
+![Crates.io](https://img.shields.io/crates/d/texcore)
+![Crates.io](https://img.shields.io/crates/v/texcore)
+![GitHub top language](https://img.shields.io/github/languages/top/MKProj/texcore)
+
+> The __TexCore__ library is under the [MIT License](LICENSE)
 
 TexCore is a library that allows a developer to write `LaTeX` using native `Rust` types. We also provide functions
 to compile the code using a Rust built LaTeX compiler, `tectonic`.
