@@ -17,7 +17,8 @@ pub enum Type {
     T_List,
     T_Item,
     T_Custom,
-    T_Commnent,
+    T_Comment,
+    T_Bundle,
 }
 
 /// Represents the metadata

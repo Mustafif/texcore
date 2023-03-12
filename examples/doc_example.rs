@@ -15,7 +15,7 @@ fn main() -> Result<(), Error> {
     let pkg = Package::new("dramatist");
     list.push_array(Elements![part, chapter, header1, header2, text, pkg]);
     // To compile, use the `compile` feature
-    list.compile(PathBuf::from("test.pdf"))?;
+    // list.compile(PathBuf::from("test.pdf"))?;
     // To write to single tex file:
     list.write(PathBuf::from("test.tex"))?;
     // To split write Packages and Main file:
@@ -24,7 +24,7 @@ fn main() -> Result<(), Error> {
         PathBuf::from("main.tex"),
         PathBuf::from("structure.tex"),
         input,
-    )?;
+    );
     // To print:
     list.print_tex();
     Ok(())

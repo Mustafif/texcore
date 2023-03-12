@@ -25,7 +25,7 @@ impl<'a, T: Tex> TexAsync<'a, T> {
         Self(t)
     }
     /// Takes ownership and returns a future of the LaTeX String
-    fn async_latex_string(self) -> impl Future<Output=String> + Send {
+    fn async_latex_string(self) -> impl Future<Output = String> + Send {
         // get the latex string from the value `T`
         let s = self.0.to_latex_string();
         // turn the string into a `Future` that is immediately ready
@@ -38,7 +38,7 @@ impl<'a, T: Tex> TexAsync<'a, T> {
 }
 
 /// An asynchronous version of `Tex::to_latex_string()`
-pub fn async_latex_string<T: Tex>(t: &T) -> impl Future<Output=String> + Send {
+pub fn async_latex_string<T: Tex>(t: &T) -> impl Future<Output = String> + Send {
     let ta = TexAsync::new(t);
     ta.async_latex_string()
 }
@@ -47,7 +47,7 @@ pub fn async_latex_string<T: Tex>(t: &T) -> impl Future<Output=String> + Send {
 impl Element<Any> {
     // reason of not using `TexAsync` is due to the usage of `Element<T>.latex` because of
     // the chance of modified elements
-    pub fn async_latex_string(&self) -> impl Future<Output=String> + Send {
+    pub fn async_latex_string(&self) -> impl Future<Output = String> + Send {
         // get the latex string
         let s = self.latex.to_string();
         // turn the string into a `Future` that is immediately ready
@@ -78,8 +78,8 @@ impl ElementList<Any> {
             let result = vec![meta.join("\n"), packages.join("\n"), document.join("\n")];
             result.join("\n")
         })
-            .await
-            .unwrap()
+        .await
+        .unwrap()
     }
     pub async fn async_latex_split_string(&self, input: Input) -> (String, String) {
         let mut meta = Vec::new();
@@ -101,8 +101,8 @@ impl ElementList<Any> {
             let result = vec![meta.join("\n"), document.join("\n")];
             (result.join("\n"), packages.join("\n"))
         })
-            .await
-            .unwrap()
+        .await
+        .unwrap()
     }
     /// Asynchronously version of `write()`
     ///
@@ -114,8 +114,8 @@ impl ElementList<Any> {
                 .await
                 .expect("Couldn't write to file");
         })
-            .await
-            .unwrap();
+        .await
+        .unwrap();
         Ok(())
     }
     /// Asynchronous version of `write_split()`

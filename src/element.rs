@@ -27,53 +27,7 @@ pub trait Tex {
 
 impl Tex for Any {
     fn to_latex_string(&self) -> String {
-        match self.type_ {
-            T_Input => {
-                let path = PathBuf::from(&self.value);
-                Input::new(path, self.level).to_latex_string()
-            }
-            T_Package => Package::new(&self.value).to_latex_string(),
-            T_Part => Part::new(&self.value).to_latex_string(),
-            T_Chapter => Chapter::new(&self.value).to_latex_string(),
-            T_Header => {
-                if let Some(hl) = self.header_level {
-                    Header::new(&self.value, hl).to_latex_string()
-                } else {
-                    Header::new(&self.value, 1).to_latex_string()
-                }
-            }
-            T_Paragraph => Paragraph::new(&self.value).to_latex_string(),
-            T_Text => match self.text_type {
-                None => Text::new(&self.value, Normal).to_latex_string(),
-                Some(t) => Text::new(&self.value, t).to_latex_string(),
-            },
-            T_Environment => {
-                let mut env = Environment::new(&self.value);
-                if let Some(elements) = &self.elements {
-                    env.set_elements(elements.to_owned())
-                }
-                env.to_latex_string()
-            }
-            T_Custom => self.value.to_string(),
-            T_Commnent => self.value.to_string(),
-            T_List => match self.list_type {
-                None => {
-                    if let Some(items) = &self.items {
-                        List::new(ListType::Itemized, items.to_owned()).to_latex_string()
-                    } else {
-                        List::new(ListType::Itemized, Vec::new()).to_latex_string()
-                    }
-                }
-                Some(ty) => {
-                    if let Some(items) = &self.items {
-                        List::new(ty, items.to_owned()).to_latex_string()
-                    } else {
-                        List::new(ty, Vec::new()).to_latex_string()
-                    }
-                }
-            },
-            T_Item => Item::new(&self.value).to_latex_string(),
-        }
+        self.latex.to_string()
     }
 }
 
@@ -377,7 +331,7 @@ impl From<Comment> for Element<Any> {
             elements: None,
             latex: latex.to_string(),
         };
-        Element::new(any, T_Commnent, value.level, latex)
+        Element::new(any, T_Comment, value.level, latex)
     }
 }
 

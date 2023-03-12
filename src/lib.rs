@@ -20,6 +20,8 @@ pub mod level;
 #[allow(unused_macros)]
 #[macro_use]
 pub(crate) mod macros;
+/// Provide bundles of `Element`s for different common use cases
+pub mod bundle;
 /// Provides extra options to LaTeX elements
 pub mod extra_ops;
 #[cfg(feature = "texcreate_template")]
@@ -30,22 +32,22 @@ pub mod type_;
 
 pub use element::*;
 pub use level::*;
-#[cfg(feature = "compile")]
-use std::io::{Error, Write};
-#[cfg(feature = "compile")]
-use std::path::PathBuf;
-#[cfg(feature = "compile")]
-use tectonic::latex_to_pdf;
 pub use type_::*;
 
-#[cfg(feature = "compile")]
-/// Compiles a tex file to a pdf file
-pub fn compile(path: PathBuf, output_path: PathBuf) -> Result<(), Error> {
-    let source = std::fs::read_to_string(path)?;
-    let pdf = latex_to_pdf(source)?;
-    let mut output = std::fs::File::create(output_path)?;
-    output.write_all(&pdf)?;
-    Ok(())
+feature! {
+    "compile"
+    use std::io::{Error, Write};
+    use std::path::PathBuf;
+    use tectonic::latex_to_pdf;
+
+    /// Compiles a tex file to a pdf file
+    pub fn compile(path: PathBuf, output_path: PathBuf) -> Result<(), Error> {
+        let source = std::fs::read_to_string(path)?;
+        let pdf = latex_to_pdf(source)?;
+        let mut output = std::fs::File::create(output_path)?;
+        output.write_all(&pdf)?;
+        Ok(())
+    }
 }
 
 /// returns a vector of `Element<Any>`
