@@ -89,6 +89,7 @@ pub enum TextType {
 #[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Any {
     pub value: String,
+    pub(crate) latex: String,
     pub type_: Type,
     pub level: Option<Level>,
     pub header_level: Option<u8>,
@@ -103,6 +104,7 @@ pub struct Any {
 pub struct Environment {
     pub name: String,
     pub elements: Vec<Element<Any>>,
+    pub(crate) latex: String,
 }
 
 impl Environment {
@@ -110,6 +112,7 @@ impl Environment {
         Self {
             name: name.to_string(),
             elements: Vec::new(),
+            latex: String::new(),
         }
     }
     pub fn push(&mut self, element: Element<Any>) {
@@ -132,6 +135,7 @@ impl Environment {
 pub struct Custom {
     pub value: String,
     pub level: Level,
+    pub(crate) latex: String,
 }
 
 impl Custom {
@@ -139,6 +143,7 @@ impl Custom {
         Self {
             value: value.to_string(),
             level,
+            latex: String::new(),
         }
     }
 }
@@ -148,6 +153,7 @@ impl Custom {
 pub struct Comment {
     pub value: String,
     pub level: Level,
+    pub(crate) latex: String,
 }
 
 impl Comment {
@@ -155,6 +161,7 @@ impl Comment {
         Self {
             value: value.to_string(),
             level,
+            latex: String::new(),
         }
     }
 }
@@ -164,11 +171,16 @@ impl Comment {
 pub struct Input {
     pub file_name: PathBuf,
     pub level: Option<Level>,
+    pub(crate) latex: String,
 }
 
 impl Input {
     pub fn new(file_name: PathBuf, level: Option<Level>) -> Self {
-        Self { file_name, level }
+        Self {
+            file_name,
+            level,
+            latex: String::new(),
+        }
     }
     pub fn file_name_str(&self) -> String {
         match self.file_name.to_str() {
@@ -182,12 +194,14 @@ impl Input {
 #[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Package {
     pub pkg: String,
+    pub(crate) latex: String,
 }
 
 impl Package {
     pub fn new(pkg: &str) -> Self {
         Self {
             pkg: pkg.to_string(),
+            latex: String::new(),
         }
     }
 }
@@ -196,12 +210,14 @@ impl Package {
 #[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Part {
     pub name: String,
+    pub(crate) latex: String,
 }
 
 impl Part {
     pub fn new(name: &str) -> Self {
         Self {
             name: name.to_string(),
+            latex: String::new(),
         }
     }
 }
@@ -210,12 +226,14 @@ impl Part {
 #[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Chapter {
     pub name: String,
+    pub(crate) latex: String,
 }
 
 impl Chapter {
     pub fn new(name: &str) -> Self {
         Self {
             name: name.to_string(),
+            latex: String::new(),
         }
     }
 }
@@ -225,6 +243,7 @@ impl Chapter {
 pub struct Header {
     pub name: String,
     pub header_level: u8,
+    pub(crate) latex: String,
 }
 
 impl Header {
@@ -232,6 +251,7 @@ impl Header {
         Self {
             name: name.to_string(),
             header_level,
+            latex: String::new(),
         }
     }
 }
@@ -241,6 +261,7 @@ impl Header {
 pub struct Text {
     pub content: String,
     pub type_: TextType,
+    pub(crate) latex: String,
 }
 
 impl Text {
@@ -248,6 +269,7 @@ impl Text {
         Self {
             content: content.to_string(),
             type_,
+            latex: String::new(),
         }
     }
 }
@@ -256,12 +278,14 @@ impl Text {
 #[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Paragraph {
     pub content: String,
+    pub(crate) latex: String,
 }
 
 impl Paragraph {
     pub fn new(content: &str) -> Self {
         Self {
             content: content.to_string(),
+            latex: String::new(),
         }
     }
 }
@@ -271,11 +295,16 @@ impl Paragraph {
 pub struct List {
     pub type_: ListType,
     pub items: Vec<Item>,
+    pub(crate) latex: String,
 }
 
 impl List {
     pub fn new(type_: ListType, items: Vec<Item>) -> Self {
-        Self { type_, items }
+        Self {
+            type_,
+            items,
+            latex: String::new(),
+        }
     }
 }
 

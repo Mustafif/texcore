@@ -1,18 +1,18 @@
-#![feature(async_iterator)]
-
+use std::collections::LinkedList;
 use std::path::PathBuf;
+use std::pin::Pin;
+use std::task::{Context, Poll};
 
-use futures::Future;
 use futures::future::ready;
-use tokio::{join, spawn};
+use futures::Future;
 use tokio::fs::File;
 use tokio::io::{AsyncWriteExt, Result};
+use tokio::{join, spawn};
 
-use crate::{feature, not_feature, async_unstable};
-use crate::{Any, Input, Tex};
 use crate::Element;
 use crate::ElementList;
 use crate::Level::*;
+use crate::{Any, Input, Tex};
 
 /// A type to provide asynchronous support to TeX elements
 ///
@@ -45,13 +45,17 @@ pub fn async_latex_string<T: Tex>(t: &T) -> impl Future<Output=String> + Send {
 
 // asynchronous method for Element<Any>
 impl Element<Any> {
-    pub async fn async_latex_string(&self) -> String {
-        async_latex_string(&self.value).await
+    // reason of not using `TexAsync` is due to the usage of `Element<T>.latex` because of
+    // the chance of modified elements
+    pub fn async_latex_string(&self) -> impl Future<Output=String> + Send {
+        // get the latex string
+        let s = self.latex.to_string();
+        // turn the string into a `Future` that is immediately ready
+        let future = ready(s);
+        // return the future
+        Box::pin(future)
     }
 }
-
-use std::async_iter::AsyncIterator;
-
 
 // asynchronous methods for ElementList<Any>
 impl ElementList<Any> {

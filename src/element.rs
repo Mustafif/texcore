@@ -11,16 +11,17 @@ use std::fs::write;
 use std::io::Error;
 use std::path::PathBuf;
 feature! {
-    #![feature = "compile"]
+    "compile"
     use tectonic::latex_to_pdf;
 }
 feature! {
-    #![feature = "parallel"]
+    "parallel"
     use rayon::prelude::*;
     use rayon::*;
 }
 /// Converts a struct to a string
 pub trait Tex {
+    // turns the element into a latex string
     fn to_latex_string(&self) -> String;
 }
 
@@ -202,6 +203,7 @@ impl Tex for Metadata {
 
 impl From<Part> for Element<Any> {
     fn from(part: Part) -> Self {
+        let latex = part.to_latex_string();
         let any = Any {
             value: part.name,
             type_: T_Part,
@@ -211,13 +213,15 @@ impl From<Part> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
+            latex: latex.to_string(),
         };
-        Element::new(any, T_Part, Document)
+        Element::new(any, T_Part, Document, latex)
     }
 }
 
 impl From<Chapter> for Element<Any> {
     fn from(chapter: Chapter) -> Self {
+        let latex = chapter.to_latex_string();
         let any = Any {
             value: chapter.name,
             type_: T_Chapter,
@@ -227,13 +231,15 @@ impl From<Chapter> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
+            latex: latex.to_string(),
         };
-        Element::new(any, T_Chapter, Document)
+        Element::new(any, T_Chapter, Document, latex)
     }
 }
 
 impl From<Header> for Element<Any> {
     fn from(header: Header) -> Self {
+        let latex = header.to_latex_string();
         let any = Any {
             value: header.name,
             type_: T_Header,
@@ -243,13 +249,15 @@ impl From<Header> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
+            latex: latex.to_string(),
         };
-        Element::new(any, T_Header, Document)
+        Element::new(any, T_Header, Document, latex)
     }
 }
 
 impl From<Paragraph> for Element<Any> {
     fn from(paragraph: Paragraph) -> Self {
+        let latex = paragraph.to_latex_string();
         let any = Any {
             value: paragraph.content,
             type_: T_Paragraph,
@@ -259,13 +267,15 @@ impl From<Paragraph> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
+            latex: latex.to_string(),
         };
-        Element::new(any, T_Paragraph, Document)
+        Element::new(any, T_Paragraph, Document, latex)
     }
 }
 
 impl From<Text> for Element<Any> {
     fn from(text: Text) -> Self {
+        let latex = text.to_latex_string();
         let any = Any {
             value: text.content,
             type_: T_Text,
@@ -275,13 +285,15 @@ impl From<Text> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
+            latex: latex.to_string(),
         };
-        Element::new(any, T_Text, Document)
+        Element::new(any, T_Text, Document, latex)
     }
 }
 
 impl From<Package> for Element<Any> {
     fn from(package: Package) -> Self {
+        let latex = package.to_latex_string();
         let any = Any {
             value: package.pkg,
             type_: T_Package,
@@ -291,13 +303,15 @@ impl From<Package> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
+            latex: latex.to_string(),
         };
-        Element::new(any, T_Package, Packages)
+        Element::new(any, T_Package, Packages, latex)
     }
 }
 
 impl From<Input> for Element<Any> {
     fn from(input: Input) -> Self {
+        let latex = input.to_latex_string();
         let any = Any {
             value: input.file_name_str(),
             type_: T_Input,
@@ -307,13 +321,15 @@ impl From<Input> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
+            latex: latex.to_string(),
         };
-        Element::new(any, T_Input, input.level.unwrap())
+        Element::new(any, T_Input, input.level.unwrap(), latex)
     }
 }
 
 impl From<Environment> for Element<Any> {
     fn from(environment: Environment) -> Self {
+        let latex = environment.to_latex_string();
         let any = Any {
             value: environment.name,
             type_: T_Environment,
@@ -323,13 +339,15 @@ impl From<Environment> for Element<Any> {
             list_type: None,
             items: None,
             elements: Some(environment.elements),
+            latex: latex.to_string(),
         };
-        Element::new(any, T_Environment, Document)
+        Element::new(any, T_Environment, Document, latex)
     }
 }
 
 impl From<Custom> for Element<Any> {
     fn from(custom: Custom) -> Self {
+        let latex = custom.to_latex_string();
         let any = Any {
             value: custom.value,
             type_: T_Custom,
@@ -339,13 +357,15 @@ impl From<Custom> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
+            latex: latex.to_string(),
         };
-        Element::new(any, T_Custom, custom.level)
+        Element::new(any, T_Custom, custom.level, latex)
     }
 }
 
 impl From<Comment> for Element<Any> {
     fn from(value: Comment) -> Self {
+        let latex = value.to_latex_string();
         let any = Any {
             value: value.value,
             type_: T_Custom,
@@ -355,8 +375,9 @@ impl From<Comment> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
+            latex: latex.to_string(),
         };
-        Element::new(any, T_Commnent, value.level)
+        Element::new(any, T_Commnent, value.level, latex)
     }
 }
 
@@ -364,17 +385,19 @@ impl From<Comment> for Element<Any> {
 #[derive(PartialOrd, PartialEq, Clone, Debug, Deserialize, Serialize)]
 pub struct Element<T: Tex> {
     pub(crate) value: T,
-    type_: Type,
+    pub(crate) type_: Type,
     pub(crate) level: Level,
+    pub(crate) latex: String,
 }
 
 impl<T: Tex> Element<T> {
     /// Creates a new Element
-    pub fn new(value: T, type_: Type, level: Level) -> Self {
+    pub fn new(value: T, type_: Type, level: Level, latex: String) -> Self {
         Self {
             value,
             type_,
             level,
+            latex,
         }
     }
 }
@@ -496,7 +519,7 @@ impl ElementList<Any> {
         })
     }
     feature! {
-        #![feature = "parallel"]
+       "parallel"
         /// A parallel alternate to `write()`
         pub fn par_write(&self, main: PathBuf){
             let pool = ThreadPoolBuilder::default().build().expect("Couldn't build pool");
@@ -544,6 +567,10 @@ impl ElementList<Any> {
     pub fn metadata(&self) -> Metadata {
         self.metadata.clone()
     }
+    /// returns a reference to the inner linked list
+    pub fn list(&self) -> &LinkedList<Element<Any>> {
+        &self.list
+    }
 }
 
 impl Default for ElementList<Any> {
@@ -567,9 +594,10 @@ fn iter_push(
     packages: &mut Vec<String>,
     meta: &mut Vec<String>,
 ) {
+    let latex = i.latex.to_string();
     match i.level {
-        Document => document.push(i.value.to_latex_string()),
-        Packages => packages.push(i.value.to_latex_string()),
-        Meta => meta.push(i.value.to_latex_string()),
+        Document => document.push(latex),
+        Packages => packages.push(latex),
+        Meta => meta.push(latex),
     }
 }

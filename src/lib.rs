@@ -1,4 +1,5 @@
-#![cfg_attr(docsrs, feature(doc_cfg))]
+#![feature(doc_auto_cfg)]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 //! # Examples
 //! ```rust
 #![doc = include_str ! ("../examples/doc_example.rs")]
@@ -13,12 +14,14 @@ pub mod future;
 /// - Packages (Where all packages go)
 /// - Document (Inside the `\begin{document}` and `\end{document}`)
 pub mod level;
-#[doc(hidden)]
+
 /// Macro APIS that are used around the library to provide easier
 /// development with features separation.
 #[allow(unused_macros)]
 #[macro_use]
 pub(crate) mod macros;
+/// Provides extra options to LaTeX elements
+pub mod extra_ops;
 #[cfg(feature = "texcreate_template")]
 /// Provides the `Template` type for the TexCreate project
 pub mod template;

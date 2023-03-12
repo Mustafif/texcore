@@ -26,7 +26,6 @@ compile = ["dep:tectonic"]
 texcreate_template = ["dep:serde_json", "async"]
 async = ["dep:futures", "dep:tokio"]
 parallel = ["dep:rayon"]
-async_unstable = ["async"]
 full = ["compile", "texcreate_template", "async", "parallel"]
 
 
