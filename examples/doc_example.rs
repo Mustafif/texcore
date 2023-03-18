@@ -19,7 +19,7 @@ fn main() -> Result<(), Error> {
     // To write to single tex file:
     list.write(PathBuf::from("test.tex"))?;
     // To split write Packages and Main file:
-    let input = Input::new(PathBuf::from("structure"), Some(Level::Meta));
+    let input = Input::new(PathBuf::from("structure"), evel::Meta);
     list.write_split(
         PathBuf::from("main.tex"),
         PathBuf::from("structure.tex"),

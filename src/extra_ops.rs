@@ -1,4 +1,7 @@
-use crate::{Any, Element};
+use crate::{
+    Any, Chapter, Custom, Element, Environment, Header, Input, List, Package, Paragraph, Part, Tex,
+    Text, options_implement,
+};
 
 /// A trait to modify an element to add extra options to it.
 pub trait ExtraOptions {
@@ -59,3 +62,17 @@ impl ExtraOptions for Element<Any> {
         }
     }
 }
+
+options_implement!(
+    Part,
+    Any,
+    Environment,
+    Custom,
+    Input,
+    Package,
+    Chapter,
+    Header,
+    Text,
+    Paragraph,
+    List
+);

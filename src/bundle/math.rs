@@ -1,7 +1,5 @@
-use crate::{Any, Element, Environment, Tex};
+use crate::{Any, Element, Environment, Level, Tex, Type};
 use serde::{Deserialize, Serialize};
-
-// TODO: Add From trait for Element<Any> for each symbol type
 
 /// Greek letters symbols
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
@@ -34,6 +32,24 @@ pub enum Greek {
     Chi(Case),
     Psi(Case),
     Omega(Case),
+}
+
+impl From<Greek> for Element<Any> {
+    fn from(value: Greek) -> Self {
+        let latex = value.to_latex_string();
+        let any = Any {
+            value: String::new(),
+            latex,
+            type_: Type::T_Bundle,
+            level: Level::Document,
+            header_level: None,
+            text_type: None,
+            list_type: None,
+            items: None,
+            elements: None,
+        };
+        Element::new_any(any)
+    }
 }
 
 impl Tex for Greek {
@@ -189,6 +205,24 @@ pub enum Arrows {
     RightHarpoonDown,
 }
 
+impl From<Arrows> for Element<Any> {
+    fn from(value: Arrows) -> Self {
+        let latex = value.to_latex_string();
+        let any = Any {
+            value: String::new(),
+            latex,
+            type_: Type::T_Bundle,
+            level: Level::Document,
+            header_level: None,
+            text_type: None,
+            list_type: None,
+            items: None,
+            elements: None,
+        };
+        Element::new_any(any)
+    }
+}
+
 impl Tex for Arrows {
     fn to_latex_string(&self) -> String {
         match self {
@@ -306,6 +340,24 @@ pub enum Binary {
     BoxTimes,
     Equiv,
     Cong,
+}
+
+impl From<Binary> for Element<Any> {
+    fn from(value: Binary) -> Self {
+        let latex = value.to_latex_string();
+        let any = Any {
+            value: String::new(),
+            latex,
+            type_: Type::T_Bundle,
+            level: Level::Document,
+            header_level: None,
+            text_type: None,
+            list_type: None,
+            items: None,
+            elements: None,
+        };
+        Element::new_any(any)
+    }
 }
 
 impl Tex for Binary {
