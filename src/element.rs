@@ -167,7 +167,7 @@ impl From<Part> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
-            latex: latex.to_string(),
+            latex,
         };
         Element::new_any(any)
     }
@@ -185,7 +185,7 @@ impl From<Chapter> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
-            latex: latex.to_string(),
+            latex,
         };
         Element::new_any(any)
     }
@@ -203,7 +203,7 @@ impl From<Header> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
-            latex: latex.to_string(),
+            latex,
         };
         Element::new_any(any)
     }
@@ -221,7 +221,7 @@ impl From<Paragraph> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
-            latex: latex.to_string(),
+            latex,
         };
         Element::new_any(any)
     }
@@ -239,7 +239,7 @@ impl From<Text> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
-            latex: latex.to_string(),
+            latex,
         };
         Element::new_any(any)
     }
@@ -257,7 +257,7 @@ impl From<Package> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
-            latex: latex.to_string(),
+            latex,
         };
         Element::new_any(any)
     }
@@ -275,7 +275,7 @@ impl From<Input> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
-            latex: latex.to_string(),
+            latex,
         };
         Element::new_any(any)
     }
@@ -293,7 +293,7 @@ impl From<Environment> for Element<Any> {
             list_type: None,
             items: None,
             elements: Some(environment.elements),
-            latex: latex.to_string(),
+            latex,
         };
         Element::new_any(any)
     }
@@ -311,7 +311,7 @@ impl From<Custom> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
-            latex: latex.to_string(),
+            latex,
         };
         Element::new_any(any)
     }
@@ -329,7 +329,7 @@ impl From<Comment> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
-            latex: latex.to_string(),
+            latex,
         };
         Element::new_any(any)
     }

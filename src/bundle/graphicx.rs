@@ -38,7 +38,7 @@ impl From<GraphicPath> for Element<Any> {
         let latex = path.to_latex_string();
         let any = Any {
             value: path.path.to_str().unwrap_or("").to_string(),
-            latex: latex.to_string(),
+            latex,
             type_: T_Bundle,
             level: Level::Meta,
             header_level: None,
@@ -79,7 +79,7 @@ impl From<GraphicInclude> for Element<Any> {
         let latex = incl.to_latex_string();
         let any = Any {
             value: incl.path.to_str().unwrap_or("").to_string(),
-            latex: latex.to_string(),
+            latex,
             type_: T_Bundle,
             level: Level::Document,
             header_level: None,
