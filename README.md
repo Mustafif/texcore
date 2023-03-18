@@ -15,7 +15,7 @@ To add to your project:
 
 ```toml
 [dependencies]
-texcore = "0.5"
+texcore = "0.6"
 ```
 
 ### The Compile Feature
@@ -26,7 +26,7 @@ are hidden under this feature.
 
 ```toml
 [dependencies]
-texcore = { version = "0.5", features = ["compile"] }
+texcore = { version = "0.6", features = ["compile"] }
 ```
 
 ### The TexCreate Template Feature
@@ -35,7 +35,7 @@ To allow easier development with the TexCreate project, I have decided to add th
 the `texcreate_template` feature.
 
 ```toml
-texcore = { version = "0.5", features = ["texcreate_template"] }
+texcore = { version = "0.6", features = ["texcreate_template"] }
 ```
 
 ### The Async Feature
@@ -56,7 +56,20 @@ Advantages of using the asynchronous writing operations is because they are done
 `async_split_write()`, the task of writing to each file is done in parallel.
 
 ```toml
-texcore = { version = "0.5", features = ["async"] }
+texcore = { version = "0.6", features = ["async"] }
+```
+
+### The Parallel Feature
+
+This features utilizes the `rayon` crate to allow `ElementList` to contain the following functions:
+
+- `ElementList::par_write()`
+- `ElementList::par_write_split()`
+- `ElementList::par_iter()`
+- `ElementList::par_iter_mut()`
+
+```toml
+texcore = { version = "0.6", features = ["parallel"] }
 ```
 
 ### The Full Feature
@@ -64,8 +77,16 @@ texcore = { version = "0.5", features = ["async"] }
 To enable all features seen above , you may use the `full` feature.
 
 ```toml
-texcore = { version = "0.5", features = ["full"] }
+texcore = { version = "0.6", features = ["full"] }
 ```
+
+### Added Modules in 0.6
+
+- The `bundle` module provides types to easily add into your document:
+    - Add images using the `graphicx` package under the module, `texcore::bundle::graphicx`
+    - Add mathematical symbols or equations under the module, `texcore::bundle::math`
+- Be able to add extra parameters to elements using the `modify_element()` function
+    - This is under the `texcore::extra_ops` module
 
 Read documentation [here](https://docs.rs/crate/texcore/latest)
 
