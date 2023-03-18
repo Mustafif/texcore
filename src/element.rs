@@ -161,7 +161,7 @@ impl From<Part> for Element<Any> {
         let any = Any {
             value: part.name,
             type_: T_Part,
-            level: None,
+            level: Document,
             header_level: None,
             text_type: None,
             list_type: None,
@@ -169,7 +169,7 @@ impl From<Part> for Element<Any> {
             elements: None,
             latex: latex.to_string(),
         };
-        Element::new(any, T_Part, Document, latex)
+        Element::new_any(any)
     }
 }
 
@@ -179,7 +179,7 @@ impl From<Chapter> for Element<Any> {
         let any = Any {
             value: chapter.name,
             type_: T_Chapter,
-            level: None,
+            level: Document,
             header_level: None,
             text_type: None,
             list_type: None,
@@ -187,7 +187,7 @@ impl From<Chapter> for Element<Any> {
             elements: None,
             latex: latex.to_string(),
         };
-        Element::new(any, T_Chapter, Document, latex)
+        Element::new_any(any)
     }
 }
 
@@ -197,7 +197,7 @@ impl From<Header> for Element<Any> {
         let any = Any {
             value: header.name,
             type_: T_Header,
-            level: None,
+            level: Document,
             header_level: Some(header.header_level),
             text_type: None,
             list_type: None,
@@ -205,7 +205,7 @@ impl From<Header> for Element<Any> {
             elements: None,
             latex: latex.to_string(),
         };
-        Element::new(any, T_Header, Document, latex)
+        Element::new_any(any)
     }
 }
 
@@ -215,7 +215,7 @@ impl From<Paragraph> for Element<Any> {
         let any = Any {
             value: paragraph.content,
             type_: T_Paragraph,
-            level: None,
+            level: Document,
             header_level: None,
             text_type: None,
             list_type: None,
@@ -223,7 +223,7 @@ impl From<Paragraph> for Element<Any> {
             elements: None,
             latex: latex.to_string(),
         };
-        Element::new(any, T_Paragraph, Document, latex)
+        Element::new_any(any)
     }
 }
 
@@ -233,7 +233,7 @@ impl From<Text> for Element<Any> {
         let any = Any {
             value: text.content,
             type_: T_Text,
-            level: None,
+            level: Document,
             header_level: None,
             text_type: Some(text.type_),
             list_type: None,
@@ -241,7 +241,7 @@ impl From<Text> for Element<Any> {
             elements: None,
             latex: latex.to_string(),
         };
-        Element::new(any, T_Text, Document, latex)
+        Element::new_any(any)
     }
 }
 
@@ -251,7 +251,7 @@ impl From<Package> for Element<Any> {
         let any = Any {
             value: package.pkg,
             type_: T_Package,
-            level: None,
+            level: Packages,
             header_level: None,
             text_type: None,
             list_type: None,
@@ -259,7 +259,7 @@ impl From<Package> for Element<Any> {
             elements: None,
             latex: latex.to_string(),
         };
-        Element::new(any, T_Package, Packages, latex)
+        Element::new_any(any)
     }
 }
 
@@ -277,7 +277,7 @@ impl From<Input> for Element<Any> {
             elements: None,
             latex: latex.to_string(),
         };
-        Element::new(any, T_Input, input.level.unwrap(), latex)
+        Element::new_any(any)
     }
 }
 
@@ -287,7 +287,7 @@ impl From<Environment> for Element<Any> {
         let any = Any {
             value: environment.name,
             type_: T_Environment,
-            level: None,
+            level: Document,
             header_level: None,
             text_type: None,
             list_type: None,
@@ -295,7 +295,7 @@ impl From<Environment> for Element<Any> {
             elements: Some(environment.elements),
             latex: latex.to_string(),
         };
-        Element::new(any, T_Environment, Document, latex)
+        Element::new_any(any)
     }
 }
 
@@ -305,7 +305,7 @@ impl From<Custom> for Element<Any> {
         let any = Any {
             value: custom.value,
             type_: T_Custom,
-            level: Some(custom.level),
+            level: custom.level,
             header_level: None,
             text_type: None,
             list_type: None,
@@ -313,7 +313,7 @@ impl From<Custom> for Element<Any> {
             elements: None,
             latex: latex.to_string(),
         };
-        Element::new(any, T_Custom, custom.level, latex)
+        Element::new_any(any)
     }
 }
 
@@ -323,7 +323,7 @@ impl From<Comment> for Element<Any> {
         let any = Any {
             value: value.value,
             type_: T_Custom,
-            level: Some(value.level),
+            level: value.level,
             header_level: None,
             text_type: None,
             list_type: None,
@@ -331,7 +331,7 @@ impl From<Comment> for Element<Any> {
             elements: None,
             latex: latex.to_string(),
         };
-        Element::new(any, T_Comment, value.level, latex)
+        Element::new_any(any)
     }
 }
 
@@ -347,6 +347,21 @@ pub struct Element<T: Tex> {
 impl<T: Tex> Element<T> {
     /// Creates a new Element
     pub fn new(value: T, type_: Type, level: Level, latex: String) -> Self {
+        Self {
+            value,
+            type_,
+            level,
+            latex,
+        }
+    }
+}
+
+impl Element<Any> {
+    /// Creates a new `Element<Any>`
+    pub fn new_any(value: Any) -> Self {
+        let type_ = value.type_;
+        let level = value.level;
+        let latex = value.latex.to_string();
         Self {
             value,
             type_,

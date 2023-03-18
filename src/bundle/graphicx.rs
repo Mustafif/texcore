@@ -40,14 +40,14 @@ impl From<GraphicPath> for Element<Any> {
             value: path.path.to_str().unwrap_or("").to_string(),
             latex: latex.to_string(),
             type_: T_Bundle,
-            level: Some(Level::Meta),
+            level: Level::Meta,
             header_level: None,
             text_type: None,
             list_type: None,
             items: None,
             elements: None,
         };
-        Element::new(any, T_Bundle, Level::Meta, latex)
+        Element::new_any(any)
     }
 }
 
@@ -81,14 +81,14 @@ impl From<GraphicInclude> for Element<Any> {
             value: incl.path.to_str().unwrap_or("").to_string(),
             latex: latex.to_string(),
             type_: T_Bundle,
-            level: Some(Level::Document),
+            level: Level::Document,
             header_level: None,
             text_type: None,
             list_type: None,
             items: None,
             elements: None,
         };
-        Element::new(any, T_Bundle, Level::Document, latex)
+        Element::new_any(any)
     }
 }
 

@@ -92,7 +92,7 @@ pub struct Any {
     pub value: String,
     pub(crate) latex: String,
     pub type_: Type,
-    pub level: Option<Level>,
+    pub level: Level,
     pub header_level: Option<u8>,
     pub text_type: Option<TextType>,
     pub list_type: Option<ListType>,
@@ -171,12 +171,12 @@ impl Comment {
 #[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Input {
     pub file_name: PathBuf,
-    pub level: Option<Level>,
+    pub level: Level,
     pub(crate) latex: String,
 }
 
 impl Input {
-    pub fn new(file_name: PathBuf, level: Option<Level>) -> Self {
+    pub fn new(file_name: PathBuf, level: Level) -> Self {
         Self {
             file_name,
             level,

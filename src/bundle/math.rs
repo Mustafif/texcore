@@ -1,6 +1,8 @@
 use crate::{Any, Element, Environment, Tex};
 use serde::{Deserialize, Serialize};
 
+// TODO: Add From trait for Element<Any> for each symbol type
+
 /// Greek letters symbols
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum Greek {
