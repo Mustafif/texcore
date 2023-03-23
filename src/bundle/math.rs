@@ -59,126 +59,126 @@ impl Tex for Greek {
                 Case::Lower => "\\alpha",
                 Case::Upper => "A",
             }
-                .to_string(),
+            .to_string(),
             Greek::Beta(c) => match c {
                 Case::Lower => "\\beta",
                 Case::Upper => "B",
             }
-                .to_string(),
+            .to_string(),
             Greek::Gamma(c) => match c {
                 Case::Lower => "\\gamma",
                 Case::Upper => "\\Gamma",
             }
-                .to_string(),
+            .to_string(),
             Greek::Delta(c) => match c {
                 Case::Lower => "\\delta",
                 Case::Upper => "\\Delta",
             }
-                .to_string(),
+            .to_string(),
             Greek::Epsilon(c) => match c {
                 Case::Lower => "\\epsilon",
                 Case::Upper => "E",
             }
-                .to_string(),
+            .to_string(),
             Greek::VarEpsilon => "\\varepsilon".to_string(),
             Greek::Zeta(c) => match c {
                 Case::Lower => "\\zeta",
                 Case::Upper => "Z",
             }
-                .to_string(),
+            .to_string(),
             Greek::Eta(c) => match c {
                 Case::Lower => "\\eta",
                 Case::Upper => "H",
             }
-                .to_string(),
+            .to_string(),
             Greek::Theta(c) => match c {
                 Case::Lower => "\\theta",
                 Case::Upper => "\\Theta",
             }
-                .to_string(),
+            .to_string(),
             Greek::VarTheta => "\\vartheta".to_string(),
             Greek::Iota(c) => match c {
                 Case::Lower => "\\iota",
                 Case::Upper => "I",
             }
-                .to_string(),
+            .to_string(),
             Greek::Kappa(c) => match c {
                 Case::Lower => "\\kappa",
                 Case::Upper => "K",
             }
-                .to_string(),
+            .to_string(),
             Greek::Lambda(c) => match c {
                 Case::Lower => "\\lambda",
                 Case::Upper => "\\Lambda",
             }
-                .to_string(),
+            .to_string(),
             Greek::Mu(c) => match c {
                 Case::Lower => "\\mu",
                 Case::Upper => "M",
             }
-                .to_string(),
+            .to_string(),
             Greek::Nu(c) => match c {
                 Case::Lower => "\\nu",
                 Case::Upper => "N",
             }
-                .to_string(),
+            .to_string(),
             Greek::Xi(c) => match c {
                 Case::Lower => "\\xi",
                 Case::Upper => "\\Xi",
             }
-                .to_string(),
+            .to_string(),
             Greek::O(c) => match c {
                 Case::Lower => "o",
                 Case::Upper => "O",
             }
-                .to_string(),
+            .to_string(),
             Greek::Pi(c) => match c {
                 Case::Lower => "\\pi",
                 Case::Upper => "\\Pi",
             }
-                .to_string(),
+            .to_string(),
             Greek::Rho(c) => match c {
                 Case::Lower => "\\rho",
                 Case::Upper => "P",
             }
-                .to_string(),
+            .to_string(),
             Greek::VarRho => "\\varrho".to_string(),
             Greek::Sigma(c) => match c {
                 Case::Lower => "\\sigma",
                 Case::Upper => "\\Sigma",
             }
-                .to_string(),
+            .to_string(),
             Greek::Tau(c) => match c {
                 Case::Lower => "\\tau",
                 Case::Upper => "T",
             }
-                .to_string(),
+            .to_string(),
             Greek::Upsilon(c) => match c {
                 Case::Lower => "\\upsilon",
                 Case::Upper => "\\Upsilon",
             }
-                .to_string(),
+            .to_string(),
             Greek::Phi(c) => match c {
                 Case::Lower => "\\phi",
                 Case::Upper => "\\Phi",
             }
-                .to_string(),
+            .to_string(),
             Greek::VarPhi => "\\varphi".to_string(),
             Greek::Chi(c) => match c {
                 Case::Lower => "\\chi",
                 Case::Upper => "X",
             }
-                .to_string(),
+            .to_string(),
             Greek::Psi(c) => match c {
                 Case::Lower => "\\psi",
                 Case::Upper => "\\Psi",
             }
-                .to_string(),
+            .to_string(),
             Greek::Omega(c) => match c {
                 Case::Lower => "\\omega",
                 Case::Upper => "\\Omega",
             }
-                .to_string(),
+            .to_string(),
         }
     }
 }
@@ -230,28 +230,28 @@ impl Tex for Arrows {
                 Case::Lower => "\\leftarrow",
                 Case::Upper => "\\Leftarrow",
             }
-                .to_string(),
+            .to_string(),
             Arrows::RightArrow(c) => match c {
                 Case::Lower => "\\rightarrow",
                 Case::Upper => "\\Rightarrow",
             }
-                .to_string(),
+            .to_string(),
             Arrows::LeftRightArrow(c) => match c {
                 Case::Lower => "\\leftrightarrow",
                 Case::Upper => "\\Leftrightarrow",
             }
-                .to_string(),
+            .to_string(),
             Arrows::RightLeftHarpoons => "\\rightleftharpoons".to_string(),
             Arrows::UpArrow(c) => match c {
                 Case::Lower => "\\uparrow",
                 Case::Upper => "\\Uparrow",
             }
-                .to_string(),
+            .to_string(),
             Arrows::DownArrow(c) => match c {
                 Case::Lower => "\\downarrow",
                 Case::Upper => "\\Downarrow",
             }
-                .to_string(),
+            .to_string(),
             Arrows::UpdownArrow => "\\Updownarrow".to_string(),
             Arrows::Mapsto => "\\mapsto".to_string(),
             Arrows::LongMapsto => "\\longmapsto".to_string(),

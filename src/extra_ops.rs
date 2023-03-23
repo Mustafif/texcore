@@ -1,6 +1,6 @@
 use crate::{
-    Any, Chapter, Custom, Element, Environment, Header, Input, List, Package, Paragraph, Part, Tex,
-    Text, options_implement,
+    options_implement, Any, Chapter, Custom, Element, Environment, Header, Input, List, Package,
+    Paragraph, Part, Tex, Text,
 };
 
 /// A trait to modify an element to add extra options to it.
