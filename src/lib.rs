@@ -1,5 +1,5 @@
-//#![feature(doc_auto_cfg)]
-//#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![feature(doc_auto_cfg)]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 //! # Examples
 //! ```rust
 #![doc = include_str ! ("../examples/doc_example.rs")]
