@@ -1,8 +1,8 @@
 # __TexCore__
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/MKProj/texcore/rust.yml)
-![Lines of code](https://img.shields.io/tokei/lines/github/MKProj/texcore)
 ![Crates.io](https://img.shields.io/crates/d/texcore)
+![Lines of code](https://img.shields.io/tokei/lines/github/mkproj/texcore)
 ![Crates.io](https://img.shields.io/crates/v/texcore)
 ![GitHub top language](https://img.shields.io/github/languages/top/MKProj/texcore)
 
