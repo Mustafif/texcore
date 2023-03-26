@@ -1,4 +1,4 @@
-use crate::extra_ops::{ExtraOptions, Options};
+use texcore_traits::{ExtraOptions, Options};
 use crate::Type::T_Bundle;
 use crate::{Any, Element, Level, Package, Tex};
 use serde::{Deserialize, Serialize};

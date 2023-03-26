@@ -22,8 +22,6 @@ pub mod level;
 pub(crate) mod macros;
 /// Provide bundles of `Element`s for different common use cases
 pub mod bundle;
-/// Provides extra options to LaTeX elements
-pub mod extra_ops;
 #[cfg(feature = "texcreate_template")]
 /// Provides the `Template` type for the TexCreate project
 pub mod template;

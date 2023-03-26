@@ -28,6 +28,6 @@ async fn main() -> Result<()> {
         PathBuf::from("structure.tex"),
         Input::new(PathBuf::from("structure"), Meta),
     )
-        .await?;
+    .await?;
     Ok(())
 }

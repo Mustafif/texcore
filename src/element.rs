@@ -3,7 +3,7 @@ use crate::TextType::*;
 use crate::Type::*;
 use crate::*;
 use std::collections::linked_list::{Iter, IterMut};
-
+use texcore_traits::*;
 use crate::feature;
 use serde::{Deserialize, Serialize};
 use std::collections::LinkedList;
@@ -42,7 +42,7 @@ impl Tex for Environment {
 
 impl Tex for Custom {
     fn to_latex_string(&self) -> String {
-        self.value.to_string()
+        self.latex.to_string()
     }
 }
 
@@ -303,7 +303,7 @@ impl From<Custom> for Element<Any> {
     fn from(custom: Custom) -> Self {
         let latex = custom.to_latex_string();
         let any = Any {
-            value: custom.value,
+            value: custom.latex,
             type_: T_Custom,
             level: custom.level,
             header_level: None,
@@ -336,7 +336,7 @@ impl From<Comment> for Element<Any> {
 }
 
 /// A latex element
-#[derive(PartialOrd, PartialEq, Clone, Debug, Deserialize, Serialize)]
+#[derive(PartialOrd, PartialEq, Clone, Debug, Deserialize, Serialize, ExtraOps)]
 pub struct Element<T: Tex> {
     pub(crate) value: T,
     pub(crate) type_: Type,
