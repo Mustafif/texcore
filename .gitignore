@@ -3,3 +3,5 @@
 test.*
 *.tex
 *.pdf
+texcore_derive/target
+texcore_traits/target
