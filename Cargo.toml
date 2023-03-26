@@ -27,7 +27,7 @@ compile = ["dep:tectonic"]
 #! Allows using the `Template` type for TexCreate
 texcreate_template = ["dep:serde_json", "async"]
 #! Provides asynchronous alternatives
-async = ["dep:futures", "dep:tokio", "dep:async-trait"]
+async = ["dep:futures", "dep:tokio"]
 #! Provides ways to iterate and write latex in parallel using `rayon`
 parallel = ["dep:rayon"]
 #! Provides all production features
