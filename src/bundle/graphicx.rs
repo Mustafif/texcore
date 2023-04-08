@@ -1,8 +1,8 @@
-use texcore_traits::{ExtraOptions, Options};
 use crate::Type::T_Bundle;
 use crate::{Any, Element, Level, Package, Tex};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use texcore_traits::{ExtraOptions, Options};
 
 /// Returns the `graphicx` package
 pub fn graphicx_pkg() -> Element<Any> {
@@ -46,6 +46,7 @@ impl From<GraphicPath> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
+            modified: false,
         };
         Element::new_any(any)
     }
@@ -87,6 +88,7 @@ impl From<GraphicInclude> for Element<Any> {
             list_type: None,
             items: None,
             elements: None,
+            modified: false,
         };
         Element::new_any(any)
     }

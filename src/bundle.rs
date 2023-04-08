@@ -4,3 +4,5 @@ pub mod graphicx;
 ///
 /// All of these symbols are from the following [OverLeaf Guide](https://www.overleaf.com/learn/latex/List_of_Greek_letters_and_math_symbols)
 pub mod math;
+/// Provides types to make tables easily
+pub mod tables;

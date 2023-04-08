@@ -99,14 +99,31 @@ pub struct Any {
     pub list_type: Option<ListType>,
     pub items: Option<Vec<Item>>,
     pub elements: Option<Vec<Element<Any>>>,
+    pub modified: bool,
 }
 
 /// Represents an environment in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize, ExtraOps)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Environment {
     pub name: String,
     pub elements: Vec<Element<Any>>,
     pub(crate) latex: String,
+    pub(crate) modified: bool,
+}
+
+impl ExtraOptions for Environment {
+    fn modify_element(&mut self, options: Vec<Options>) {
+        // we will have to rebuild the latex string
+        let name = &self.name;
+        let mut begin = format!(r"\begin{{{}}}", name);
+        let end = format!(r"\end{{{}}}", name);
+        for option in options {
+            begin = option.modify(&begin);
+        }
+        let inner = self.inner_latex_string();
+        self.latex = vec![begin, inner, end].join("\n");
+        self.modified = true;
+    }
 }
 
 impl Environment {
@@ -115,6 +132,7 @@ impl Environment {
             name: name.to_string(),
             elements: Vec::new(),
             latex: String::new(),
+            modified: false,
         }
     }
     pub fn push(&mut self, element: Element<Any>) {
@@ -137,6 +155,7 @@ impl Environment {
 pub struct Custom {
     pub level: Level,
     pub(crate) latex: String,
+    pub(crate) modified: bool,
 }
 
 impl Custom {
@@ -144,12 +163,13 @@ impl Custom {
         Self {
             level,
             latex: latex.to_string(),
+            modified: false,
         }
     }
 }
 
 /// Represents a comment in LaTeX `% foo bar...`
-#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize, ExtraOps)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Comment {
     pub value: String,
     pub level: Level,
@@ -172,6 +192,7 @@ pub struct Input {
     pub file_name: PathBuf,
     pub level: Level,
     pub(crate) latex: String,
+    pub(crate) modified: bool,
 }
 
 impl Input {
@@ -180,6 +201,7 @@ impl Input {
             file_name,
             level,
             latex: String::new(),
+            modified: false,
         }
     }
     pub fn file_name_str(&self) -> String {
@@ -195,6 +217,7 @@ impl Input {
 pub struct Package {
     pub pkg: String,
     pub(crate) latex: String,
+    pub(crate) modified: bool,
 }
 
 impl Package {
@@ -202,6 +225,7 @@ impl Package {
         Self {
             pkg: pkg.to_string(),
             latex: String::new(),
+            modified: false,
         }
     }
 }
@@ -211,6 +235,7 @@ impl Package {
 pub struct Part {
     pub name: String,
     pub(crate) latex: String,
+    pub(crate) modified: bool,
 }
 
 impl Part {
@@ -218,6 +243,7 @@ impl Part {
         Self {
             name: name.to_string(),
             latex: String::new(),
+            modified: false,
         }
     }
 }
@@ -227,6 +253,7 @@ impl Part {
 pub struct Chapter {
     pub name: String,
     pub(crate) latex: String,
+    pub(crate) modified: bool,
 }
 
 impl Chapter {
@@ -234,6 +261,7 @@ impl Chapter {
         Self {
             name: name.to_string(),
             latex: String::new(),
+            modified: false,
         }
     }
 }
@@ -244,6 +272,7 @@ pub struct Header {
     pub name: String,
     pub header_level: u8,
     pub(crate) latex: String,
+    pub(crate) modified: bool,
 }
 
 impl Header {
@@ -252,6 +281,7 @@ impl Header {
             name: name.to_string(),
             header_level,
             latex: String::new(),
+            modified: false,
         }
     }
 }
@@ -262,6 +292,7 @@ pub struct Text {
     pub content: String,
     pub type_: TextType,
     pub(crate) latex: String,
+    pub(crate) modified: bool,
 }
 
 impl Text {
@@ -270,6 +301,7 @@ impl Text {
             content: content.to_string(),
             type_,
             latex: String::new(),
+            modified: false,
         }
     }
 }
@@ -279,6 +311,7 @@ impl Text {
 pub struct Paragraph {
     pub content: String,
     pub(crate) latex: String,
+    pub(crate) modified: bool,
 }
 
 impl Paragraph {
@@ -286,6 +319,7 @@ impl Paragraph {
         Self {
             content: content.to_string(),
             latex: String::new(),
+            modified: false,
         }
     }
 }
@@ -296,6 +330,7 @@ pub struct List {
     pub type_: ListType,
     pub items: Vec<Item>,
     pub(crate) latex: String,
+    pub(crate) modified: bool,
 }
 
 impl List {
@@ -304,6 +339,7 @@ impl List {
             type_,
             items,
             latex: String::new(),
+            modified: false,
         }
     }
 }

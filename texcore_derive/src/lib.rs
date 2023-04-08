@@ -17,6 +17,7 @@ fn impl_my_trait(ast: &syn::DeriveInput) -> TokenStream {
                 for option in options {
                     self.latex = option.modify(&self.latex);
                 }
+                self.modified = true;
             }
         }
     };

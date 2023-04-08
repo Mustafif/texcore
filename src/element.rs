@@ -1,15 +1,15 @@
+use crate::feature;
 use crate::Level::*;
 use crate::TextType::*;
 use crate::Type::*;
 use crate::*;
-use std::collections::linked_list::{Iter, IterMut};
-use texcore_traits::*;
-use crate::feature;
 use serde::{Deserialize, Serialize};
+use std::collections::linked_list::{Iter, IterMut};
 use std::collections::LinkedList;
 use std::fs::write;
 use std::io::Error;
 use std::path::PathBuf;
+use texcore_traits::*;
 feature! {
     "compile"
     use tectonic::latex_to_pdf;
@@ -156,10 +156,14 @@ impl Tex for Metadata {
 }
 
 impl From<Part> for Element<Any> {
-    fn from(part: Part) -> Self {
-        let latex = part.to_latex_string();
+    fn from(value: Part) -> Self {
+        let latex = if value.modified {
+            value.latex
+        } else {
+            value.to_latex_string()
+        };
         let any = Any {
-            value: part.name,
+            value: value.name,
             type_: T_Part,
             level: Document,
             header_level: None,
@@ -168,16 +172,21 @@ impl From<Part> for Element<Any> {
             items: None,
             elements: None,
             latex,
+            modified: value.modified,
         };
         Element::new_any(any)
     }
 }
 
 impl From<Chapter> for Element<Any> {
-    fn from(chapter: Chapter) -> Self {
-        let latex = chapter.to_latex_string();
+    fn from(value: Chapter) -> Self {
+        let latex = if value.modified {
+            value.latex
+        } else {
+            value.to_latex_string()
+        };
         let any = Any {
-            value: chapter.name,
+            value: value.name,
             type_: T_Chapter,
             level: Document,
             header_level: None,
@@ -186,34 +195,44 @@ impl From<Chapter> for Element<Any> {
             items: None,
             elements: None,
             latex,
+            modified: value.modified,
         };
         Element::new_any(any)
     }
 }
 
 impl From<Header> for Element<Any> {
-    fn from(header: Header) -> Self {
-        let latex = header.to_latex_string();
+    fn from(value: Header) -> Self {
+        let latex = if value.modified {
+            value.latex
+        } else {
+            value.to_latex_string()
+        };
         let any = Any {
-            value: header.name,
+            value: value.name,
             type_: T_Header,
             level: Document,
-            header_level: Some(header.header_level),
+            header_level: Some(value.header_level),
             text_type: None,
             list_type: None,
             items: None,
             elements: None,
             latex,
+            modified: value.modified,
         };
         Element::new_any(any)
     }
 }
 
 impl From<Paragraph> for Element<Any> {
-    fn from(paragraph: Paragraph) -> Self {
-        let latex = paragraph.to_latex_string();
+    fn from(value: Paragraph) -> Self {
+        let latex = if value.modified {
+            value.latex
+        } else {
+            value.to_latex_string()
+        };
         let any = Any {
-            value: paragraph.content,
+            value: value.content,
             type_: T_Paragraph,
             level: Document,
             header_level: None,
@@ -222,34 +241,44 @@ impl From<Paragraph> for Element<Any> {
             items: None,
             elements: None,
             latex,
+            modified: value.modified,
         };
         Element::new_any(any)
     }
 }
 
 impl From<Text> for Element<Any> {
-    fn from(text: Text) -> Self {
-        let latex = text.to_latex_string();
+    fn from(value: Text) -> Self {
+        let latex = if value.modified {
+            value.latex
+        } else {
+            value.to_latex_string()
+        };
         let any = Any {
-            value: text.content,
+            value: value.content,
             type_: T_Text,
             level: Document,
             header_level: None,
-            text_type: Some(text.type_),
+            text_type: Some(value.type_),
             list_type: None,
             items: None,
             elements: None,
             latex,
+            modified: value.modified,
         };
         Element::new_any(any)
     }
 }
 
 impl From<Package> for Element<Any> {
-    fn from(package: Package) -> Self {
-        let latex = package.to_latex_string();
+    fn from(value: Package) -> Self {
+        let latex = if value.modified {
+            value.latex
+        } else {
+            value.to_latex_string()
+        };
         let any = Any {
-            value: package.pkg,
+            value: value.pkg,
             type_: T_Package,
             level: Packages,
             header_level: None,
@@ -258,60 +287,71 @@ impl From<Package> for Element<Any> {
             items: None,
             elements: None,
             latex,
+            modified: value.modified,
         };
         Element::new_any(any)
     }
 }
 
 impl From<Input> for Element<Any> {
-    fn from(input: Input) -> Self {
-        let latex = input.to_latex_string();
+    fn from(value: Input) -> Self {
+        let latex = if value.modified {
+            value.latex.to_string()
+        } else {
+            value.to_latex_string()
+        };
         let any = Any {
-            value: input.file_name_str(),
+            value: value.file_name_str(),
             type_: T_Input,
-            level: input.level,
+            level: value.level,
             header_level: None,
             text_type: None,
             list_type: None,
             items: None,
             elements: None,
             latex,
+            modified: value.modified,
         };
         Element::new_any(any)
     }
 }
 
 impl From<Environment> for Element<Any> {
-    fn from(environment: Environment) -> Self {
-        let latex = environment.to_latex_string();
+    fn from(value: Environment) -> Self {
+        let latex = if value.modified {
+            value.latex
+        } else {
+            value.to_latex_string()
+        };
         let any = Any {
-            value: environment.name,
+            value: value.name,
             type_: T_Environment,
             level: Document,
             header_level: None,
             text_type: None,
             list_type: None,
             items: None,
-            elements: Some(environment.elements),
+            elements: Some(value.elements),
             latex,
+            modified: value.modified,
         };
         Element::new_any(any)
     }
 }
 
 impl From<Custom> for Element<Any> {
-    fn from(custom: Custom) -> Self {
-        let latex = custom.to_latex_string();
+    fn from(value: Custom) -> Self {
         let any = Any {
-            value: custom.latex,
+            value: value.latex.to_string(),
             type_: T_Custom,
-            level: custom.level,
+            level: value.level,
             header_level: None,
             text_type: None,
             list_type: None,
             items: None,
             elements: None,
-            latex,
+            latex: value.latex,
+            modified: value.modified,
         };
         Element::new_any(any)
     }
@@ -330,6 +370,7 @@ impl From<Comment> for Element<Any> {
             items: None,
             elements: None,
             latex,
+            modified: false,
         };
         Element::new_any(any)
     }
@@ -342,6 +383,7 @@ pub struct Element<T: Tex> {
     pub(crate) type_: Type,
     pub(crate) level: Level,
     pub(crate) latex: String,
+    pub(crate) modified: bool,
 }
 
 impl<T: Tex> Element<T> {
@@ -352,6 +394,7 @@ impl<T: Tex> Element<T> {
             type_,
             level,
             latex,
+            modified: false,
         }
     }
 }
@@ -362,11 +405,13 @@ impl Element<Any> {
         let type_ = value.type_;
         let level = value.level;
         let latex = value.latex.to_string();
+        let modified = value.modified;
         Self {
             value,
             type_,
             level,
             latex,
+            modified,
         }
     }
 }
