@@ -14,6 +14,7 @@ fn impl_my_trait(ast: &syn::DeriveInput) -> TokenStream {
     let gen = quote! {
         impl #impl_generics ExtraOptions for #name #ty_generics {
             fn modify_element(&mut self, options: Vec<Options>){
+                self.latex = self.to_latex_string();
                 for option in options {
                     self.latex = option.modify(&self.latex);
                 }

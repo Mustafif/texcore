@@ -377,7 +377,7 @@ impl From<Comment> for Element<Any> {
 }
 
 /// A latex element
-#[derive(PartialOrd, PartialEq, Clone, Debug, Deserialize, Serialize, ExtraOps)]
+#[derive(PartialOrd, PartialEq, Clone, Debug, Deserialize, Serialize)]
 pub struct Element<T: Tex> {
     pub(crate) value: T,
     pub(crate) type_: Type,
@@ -412,6 +412,15 @@ impl Element<Any> {
             level,
             latex,
             modified,
+        }
+    }
+}
+
+impl ExtraOptions for Element<Any> {
+    fn modify_element(&mut self, options: Vec<Options>) {
+        self.latex = self.value.to_latex_string();
+        for option in options {
+            self.latex = option.modify(&self.latex);
         }
     }
 }

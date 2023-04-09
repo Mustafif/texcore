@@ -27,6 +27,9 @@ pub mod bundle;
 pub mod template;
 /// Type controls the different kinds of latex elements
 pub mod type_;
+// Testing all in a single module
+#[cfg(test)]
+mod tests;
 
 pub use element::*;
 pub use level::*;

@@ -287,7 +287,7 @@ impl Header {
 }
 
 /// Represents `\<text type>{}` in latex
-#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize, ExtraOps)]
+#[derive(Debug, Clone, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub struct Text {
     pub content: String,
     pub type_: TextType,
@@ -357,3 +357,4 @@ impl Item {
         }
     }
 }
+

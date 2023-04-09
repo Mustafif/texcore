@@ -26,7 +26,7 @@ fn columns() -> Vec<Column> {
 }
 
 fn main() -> Result<()> {
-    let table = Table::new(None, columns(), rows(), false, false);
+    let _ = Table::new(None, columns(), rows(), false, false);
     let mut list = ElementList::new(&Metadata::default());
 
     let mut env = Environment::new("tabular");
