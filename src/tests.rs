@@ -10,7 +10,6 @@ macro_rules! testing {
     };
 }
 
-
 testing! {
     fn test_extra_ops(){
         let mut chapter = Chapter::new("A chapter");

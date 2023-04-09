@@ -1,5 +1,5 @@
-use texcore_traits::{ExtraOptions, Options};
 use crate::{Any, Element, Elements, Environment, Package, Tex, Text, TextType};
+use texcore_traits::{ExtraOptions, Options};
 
 /// A wrapper over the `Environment` element that provides a better approach to create tables.
 #[derive(Debug, Clone)]
@@ -52,9 +52,7 @@ impl Table {
         let col_opt = Options::Curly(self.col_pos.to_latex_string());
         if self.extension {
             match self.width {
-                None => {
-                    env.modify_element(vec![col_opt])
-                }
+                None => env.modify_element(vec![col_opt]),
                 Some(w) => {
                     let s = format!("{w}\\textwidth");
                     let opt = Options::Curly(s);
@@ -195,9 +193,9 @@ impl Tex for Row {
         let mut s = String::new();
         for i in &self.elements {
             s.push_str(&i.latex);
-            s.push('&')
+            s.push_str(" & ")
         }
-        let _ = s.remove(s.len() - 1);
+        let _ = s.remove(s.len() - 2);
         s.push_str(r"\\");
         s
     }

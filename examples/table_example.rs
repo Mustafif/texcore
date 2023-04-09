@@ -1,17 +1,20 @@
+use std::io::Result;
 use std::path::PathBuf;
 use texcore::bundle::tables::*;
-use texcore::{Element, ElementList, Elements, Environment, Metadata, Text};
 use texcore::TextType::Normal;
-use std::io::Result;
-use texcore_traits::{ExtraOptions, Options};
+use texcore::{Element, ElementList, Elements, Metadata, Text};
 
 fn rows() -> Vec<Row> {
     let row_els = vec![
         Elements![
-            Text::new("foo", Normal), Text::new("bar", Normal), Text::new("baz", Normal)
+            Text::new("foo", Normal),
+            Text::new("bar", Normal),
+            Text::new("baz", Normal)
         ],
         Elements![
-            Text::new("baz", Normal), Text::new("foo", Normal), Text::new("bar", Normal)
+            Text::new("baz", Normal),
+            Text::new("foo", Normal),
+            Text::new("bar", Normal)
         ],
     ];
     vec_to_rows(row_els)

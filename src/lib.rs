@@ -59,7 +59,7 @@ macro_rules! Elements {
         {
             let mut vec = Vec::new();
             $(
-                vec.push(Element::from($element));
+                vec.push($element.into());
             )*
             vec
         }
