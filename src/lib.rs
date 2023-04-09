@@ -26,14 +26,14 @@ pub mod bundle;
 /// Provides the `Template` type for the TexCreate project
 pub mod template;
 /// Type controls the different kinds of latex elements
-pub mod type_;
+pub mod ty;
 // Testing all in a single module
 #[cfg(test)]
 mod tests;
 
 pub use element::*;
 pub use level::*;
-pub use type_::*;
+pub use ty::*;
 
 feature! {
     "compile"
@@ -59,7 +59,7 @@ macro_rules! Elements {
         {
             let mut vec = Vec::new();
             $(
-                vec.push($element.into());
+                vec.push(Element::from($element));
             )*
             vec
         }

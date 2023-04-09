@@ -26,16 +26,9 @@ fn columns() -> Vec<Column> {
 }
 
 fn main() -> Result<()> {
-    let _ = Table::new(None, columns(), rows(), false, false);
+    let table = Table::new(None, columns(), rows(), false, false);
     let mut list = ElementList::new(&Metadata::default());
-
-    let mut env = Environment::new("tabular");
-    for row in rows() {
-        env.push(row.to_element());
-    }
-    let option = Options::Curly("something".to_string());
-    env.modify_element(vec![option]);
-    list.push(Element::from(env));
+    list.push(Element::from(table));
     list.write(PathBuf::from("test.tex"))?;
     Ok(())
 }
