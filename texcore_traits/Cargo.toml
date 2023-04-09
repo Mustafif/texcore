@@ -2,7 +2,9 @@
 name = "texcore_traits"
 version = "0.1.0"
 edition = "2021"
-
+description = "Provides extra traits to the TexCore library."
+license = "MIT"
+documentation = "https://docs.rs/crate/texcore_traits/latest"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
