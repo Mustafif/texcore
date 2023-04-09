@@ -1,4 +1,4 @@
-RCMD = cargo release --execute
+RCMD = cargo publish
 initial_commit:
 	git add -A
 	git commit -m "Initial work on v$(VERS)"
@@ -11,7 +11,7 @@ git:
 publish:
 	cd texcore_derive && $(RCMD)
 	cd texcore_traits && $(RCMD)
-	$(RCMD)
+	cargo release --execute
 
 all:
 	make git
