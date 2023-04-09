@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "texcore_xops_derive"
+name = "texcore_derive"
 version = "0.1.0"
 dependencies = [
  "quote",
