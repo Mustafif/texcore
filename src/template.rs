@@ -76,7 +76,7 @@ impl Tex for Template {
 }
 
 /// Semantic versioning for Templates
-#[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq, PartialOrd)]
+#[derive(Debug, Copy, Clone, Deserialize, Serialize, PartialEq, PartialOrd, Eq)]
 pub struct Version {
     major: u8,
     minor: u8,
@@ -110,6 +110,16 @@ impl Version {
         self.minor = minor;
         self.patch = patch;
     }
+    /// Returns the version of a `Cargo` project. 
+    pub fn cargo_version() -> Self {
+        let vers: &str = env!("CARGO_PKG_VERSION");
+        let split: Vec<&str> = vers.split(".").collect();
+        Self {
+            major: split[0].parse().unwrap(),
+            minor: split[1].parse().unwrap(),
+            patch: split[2].parse().unwrap(),
+        }
+    }
 }
 
 /// Creates Template with default `v1.0.0`
@@ -129,3 +139,5 @@ impl Display for Version {
         f.write_str(&s)
     }
 }
+
+

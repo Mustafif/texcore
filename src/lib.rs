@@ -57,11 +57,7 @@ feature! {
 macro_rules! Elements {
     ($($element: expr), *) => {
         {
-            let mut vec = Vec::new();
-            $(
-                vec.push($element.into());
-            )*
-            vec
+            vec![$($element.into()), +]
         }
     };
 }
