@@ -5,7 +5,9 @@ use std::fmt::{Display, Formatter};
 use std::fs::read_to_string;
 
 use std::io::Result;
+use std::num::ParseIntError;
 use std::path::PathBuf;
+use std::str::FromStr;
 
 /// A TexCreate-template that will be used to store and create TexCreate projects
 #[derive(Debug, Deserialize, Serialize)]
@@ -113,14 +115,25 @@ impl Version {
     /// Returns the version of a `Cargo` project. 
     pub fn cargo_version() -> Self {
         let vers: &str = env!("CARGO_PKG_VERSION");
-        let split: Vec<&str> = vers.split(".").collect();
-        Self {
-            major: split[0].parse().unwrap(),
-            minor: split[1].parse().unwrap(),
-            patch: split[2].parse().unwrap(),
-        }
+        Self::from_str(vers.trim()).unwrap()
     }
 }
+
+
+impl FromStr for Version {
+    type Err = ParseIntError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        let split: Vec<&str> = s.split(".").collect();
+        let version = Version::new(
+            split[0].parse()?,
+            split[1].parse()?,
+            split[2].parse()?,
+        );
+        Ok(version)
+    }
+}
+
 
 /// Creates Template with default `v1.0.0`
 impl Default for Version {
@@ -141,3 +154,17 @@ impl Display for Version {
 }
 
 
+#[test]
+fn test_version() {
+    let vers_str = "1.0.0";
+    let version = Version::from_str(vers_str).unwrap();
+    let expected = Version::new(1, 0, 0);
+    assert_eq!(version, expected)
+}
+
+#[test]
+fn test_ge_le_version() {
+    let ex = Version::new(3, 0, 0);
+    let ex2 = Version::new(3, 1, 0);
+    assert_eq!(ex2 > ex, true)
+}
