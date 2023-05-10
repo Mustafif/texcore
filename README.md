@@ -1,10 +1,11 @@
 # __TexCore__
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/MKProj/texcore/rust.yml)
 ![Crates.io](https://img.shields.io/crates/d/texcore)
 ![Lines of code](https://img.shields.io/tokei/lines/github/mkproj/texcore)
 ![Crates.io](https://img.shields.io/crates/v/texcore)
 ![GitHub top language](https://img.shields.io/github/languages/top/MKProj/texcore)
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/mustafif09Q)
 
 > The __TexCore__ library is under the [MIT License](LICENSE)
 
